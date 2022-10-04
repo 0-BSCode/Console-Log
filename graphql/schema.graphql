@@ -3,5 +3,13 @@
 
 
 type Query {
-  ok: Boolean!
+  users: [users]!
+}
+
+type users {
+  email: String
+  id: String
+  image: String
+  password: String
+  username: String
 }

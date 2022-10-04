@@ -1,5 +1,5 @@
 import users from "./findMany";
 
-export default {
-  users,
-};
+const queries = [users];
+
+export default queries;

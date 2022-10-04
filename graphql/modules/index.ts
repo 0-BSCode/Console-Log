@@ -1,1 +1,5 @@
-export * from "./users";
+import userSchema from "./users";
+
+const types = [userSchema];
+
+export default types;

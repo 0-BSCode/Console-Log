@@ -1,7 +1,7 @@
 import { objectType } from "nexus";
 
 export default objectType({
-  name: "link",
+  name: "users",
   definition(t) {
     t.string("id");
     t.string("username");

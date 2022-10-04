@@ -1,9 +1,11 @@
 import { makeSchema } from "nexus";
-import * as types from "./modules";
+import types from "./modules";
+import User from "./modules/users/typeDefs";
+import UserQuery from "./modules/users/queries/findMany";
 import { join } from "path";
 
 const schema = makeSchema({
-  types,
+  types: types,
   outputs: {
     typegen: join(
       process.cwd(),
