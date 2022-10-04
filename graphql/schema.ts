@@ -1,8 +1,9 @@
 import { makeSchema } from "nexus";
+import * as types from "./modules";
 import { join } from "path";
 
 const schema = makeSchema({
-  types: [],
+  types,
   outputs: {
     typegen: join(
       process.cwd(),
