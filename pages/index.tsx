@@ -2,22 +2,42 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useQuery, useMutation } from "@apollo/client";
+import { User } from "@prisma/client";
 
 const AllUsersQuery = gql`
   query AllUsersQuery {
     users {
+      id
       username
       email
     }
   }
 `;
 
+const DeleteUserMutation = gql`
+  mutation DeleteUserMutation($id: String!) {
+    deleteUser(id: $id) {
+      id
+    }
+  }
+`;
+
 const Home: NextPage = () => {
-  const { data, loading, error } = useQuery(AllUsersQuery);
+  const { data, loading, error, fetchMore } = useQuery(AllUsersQuery);
+  const [deleteUser, mutationState] = useMutation(DeleteUserMutation, {
+    onCompleted: () => {
+      fetchMore({});
+    },
+  });
+  const users: User[] = data?.users;
 
   if (loading) return <p>LOADING...</p>;
   if (error) return <p>FUCK</p>;
+
+  console.log("data");
+  console.log(data);
+
   return (
     <div className={styles.container}>
       <Head>
@@ -30,7 +50,26 @@ const Home: NextPage = () => {
         <h1 className={styles.title}>
           Welcome to <a href="https://nextjs.org">Next.js!</a>
         </h1>
-        {JSON.stringify(data)}
+        <ul>
+          {users.map((user: User) => (
+            <li key={user.id}>
+              <div>
+                <p>{user.id}</p>
+                <p>{user.username}</p>
+                <p>{user.email}</p>
+              </div>
+              <button
+                disabled={mutationState.loading}
+                onClick={(e) => {
+                  e.preventDefault();
+                  deleteUser({ variables: { id: user.id } });
+                }}
+              >
+                Delete
+              </button>
+            </li>
+          ))}
+        </ul>
 
         <p className={styles.description}>
           Get started by editing{" "}
