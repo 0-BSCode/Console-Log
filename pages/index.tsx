@@ -4,6 +4,7 @@ import Image from "next/image";
 import styles from "../styles/Home.module.css";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { User } from "@prisma/client";
+import { useState } from "react";
 
 const AllUsersQuery = gql`
   query AllUsersQuery {
@@ -11,6 +12,7 @@ const AllUsersQuery = gql`
       id
       username
       email
+      image
     }
   }
 `;
@@ -23,13 +25,58 @@ const DeleteUserMutation = gql`
   }
 `;
 
+const CreateUserMutation = gql`
+  mutation CreateUserMutation(
+    $username: String!
+    $email: String!
+    $password: String!
+  ) {
+    createUser(username: $username, email: $email, password: $password) {
+      id
+      username
+      email
+    }
+
+    createUserSession {
+      accessToken
+    }
+  }
+`;
+
+const defaultParams: Partial<User> = {
+  id: "",
+  username: "",
+  password: "",
+  email: "",
+};
+
 const Home: NextPage = () => {
   const { data, loading, error, fetchMore } = useQuery(AllUsersQuery);
-  const [deleteUser, mutationState] = useMutation(DeleteUserMutation, {
-    onCompleted: () => {
-      fetchMore({});
-    },
-  });
+  const [deleteUser, deleteUserMutationState] = useMutation(
+    DeleteUserMutation,
+    {
+      onCompleted: () => {
+        fetchMore({});
+      },
+    }
+  );
+  const [createUser, CreateUserMutationState] = useMutation(
+    CreateUserMutation,
+    {
+      onCompleted: (data) => {
+        console.log("DATA");
+        console.log(data);
+        fetchMore({});
+      },
+      onError: (e) => {
+        alert(`BAD: ${JSON.stringify(e.message)}`);
+      },
+    }
+  );
+
+  const [createUserParams, setCreateUserParams] =
+    useState<Partial<User>>(defaultParams);
+
   const users: User[] = data?.users;
 
   if (loading) return <p>LOADING...</p>;
@@ -57,9 +104,10 @@ const Home: NextPage = () => {
                 <p>{user.id}</p>
                 <p>{user.username}</p>
                 <p>{user.email}</p>
+                <p>{user.image}</p>
               </div>
               <button
-                disabled={mutationState.loading}
+                disabled={deleteUserMutationState.loading}
                 onClick={(e) => {
                   e.preventDefault();
                   deleteUser({ variables: { id: user.id } });
@@ -71,40 +119,50 @@ const Home: NextPage = () => {
           ))}
         </ul>
 
-        <p className={styles.description}>
-          Get started by editing{" "}
-          <code className={styles.code}>pages/index.tsx</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            createUser({
+              variables: createUserParams,
+            });
+            setCreateUserParams(defaultParams);
+          }}
+        >
+          <input
+            type={"text"}
+            placeholder={"Username"}
+            value={createUserParams.username}
+            onChange={(e) =>
+              setCreateUserParams({
+                ...createUserParams,
+                username: e.target.value,
+              })
+            }
+          />
+          <input
+            type={"email"}
+            placeholder={"Email"}
+            value={createUserParams.email}
+            onChange={(e) =>
+              setCreateUserParams({
+                ...createUserParams,
+                email: e.target.value,
+              })
+            }
+          />
+          <input
+            type={"password"}
+            placeholder={"Password"}
+            value={createUserParams.password}
+            onChange={(e) =>
+              setCreateUserParams({
+                ...createUserParams,
+                password: e.target.value,
+              })
+            }
+          />
+          <button>SUBMIT</button>
+        </form>
       </main>
 
       <footer className={styles.footer}>
