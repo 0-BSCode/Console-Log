@@ -10,6 +10,7 @@ type Mutation {
 
 type Query {
   findUserSession(id: String!): user_session!
+  user(email: String!, password: String!): user!
   users: [user]!
 }
 

@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
-import { gql, useQuery, useMutation } from "@apollo/client";
+import { gql, useQuery, useMutation, useLazyQuery } from "@apollo/client";
 import { User } from "@prisma/client";
 import { useState } from "react";
 
@@ -39,8 +39,16 @@ const CreateUserMutation = gql`
   }
 `;
 
+const FindUserQuery = gql`
+  query FindUserQuery($email: String!, $password: String!) {
+    user(email: $email, password: $password) {
+      id
+      email
+    }
+  }
+`;
+
 const defaultParams: Partial<User> = {
-  id: "",
   username: "",
   password: "",
   email: "",
@@ -52,6 +60,13 @@ const Home: NextPage = () => {
       alert(`BAD: ${e.message}`);
     },
   });
+
+  const [getUser, getUserQueryState] = useLazyQuery(FindUserQuery, {
+    onCompleted: () => {
+      fetchMore({});
+    },
+  });
+
   const [deleteUser, deleteUserMutationState] = useMutation(
     DeleteUserMutation,
     {
@@ -74,6 +89,9 @@ const Home: NextPage = () => {
   );
 
   const [createUserParams, setCreateUserParams] =
+    useState<Partial<User>>(defaultParams);
+
+  const [findUserParams, setFindUserParams] =
     useState<Partial<User>>(defaultParams);
 
   const users: User[] = data?.users;
@@ -120,6 +138,50 @@ const Home: NextPage = () => {
         <form
           onSubmit={(e) => {
             e.preventDefault();
+            getUser({
+              variables: findUserParams,
+            });
+          }}
+        >
+          <input
+            type={"text"}
+            placeholder={"Username"}
+            value={findUserParams.username}
+            onChange={(e) =>
+              setFindUserParams({
+                ...findUserParams,
+                username: e.target.value,
+              })
+            }
+          />
+          <input
+            type={"email"}
+            placeholder={"Email"}
+            value={findUserParams.email}
+            onChange={(e) =>
+              setFindUserParams({
+                ...findUserParams,
+                email: e.target.value,
+              })
+            }
+          />
+          <input
+            type={"password"}
+            placeholder={"Password"}
+            value={findUserParams.password}
+            onChange={(e) =>
+              setFindUserParams({
+                ...findUserParams,
+                password: e.target.value,
+              })
+            }
+          />
+          <button>LOG IN</button>
+        </form>
+
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
             createUser({
               variables: createUserParams,
             });
@@ -158,7 +220,7 @@ const Home: NextPage = () => {
               })
             }
           />
-          <button>SUBMIT</button>
+          <button>REGISTER</button>
         </form>
       </main>
 

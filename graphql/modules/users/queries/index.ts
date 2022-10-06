@@ -1,5 +1,6 @@
+import user from "./findOne";
 import users from "./findMany";
 
-const queries = [users];
+const queries = [user, users];
 
 export default queries;
