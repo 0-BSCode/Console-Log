@@ -11,8 +11,6 @@ export default objectType({
     t.field("user", {
       type: User,
       async resolve(session: User_Session, _, ctx) {
-        console.log("SESSION");
-        console.log(session);
         try {
           return await prisma.user.findFirst({
             where: {

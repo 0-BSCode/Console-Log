@@ -36,10 +36,6 @@ const CreateUserMutation = gql`
       username
       email
     }
-
-    createUserSession {
-      accessToken
-    }
   }
 `;
 
@@ -51,7 +47,11 @@ const defaultParams: Partial<User> = {
 };
 
 const Home: NextPage = () => {
-  const { data, loading, error, fetchMore } = useQuery(AllUsersQuery);
+  const { data, loading, error, fetchMore } = useQuery(AllUsersQuery, {
+    onError: (e) => {
+      alert(`BAD: ${e.message}`);
+    },
+  });
   const [deleteUser, deleteUserMutationState] = useMutation(
     DeleteUserMutation,
     {
@@ -64,9 +64,8 @@ const Home: NextPage = () => {
     CreateUserMutation,
     {
       onCompleted: (data) => {
-        console.log("DATA");
-        console.log(data);
         fetchMore({});
+        setCreateUserParams(defaultParams);
       },
       onError: (e) => {
         alert(`BAD: ${JSON.stringify(e.message)}`);
@@ -80,10 +79,7 @@ const Home: NextPage = () => {
   const users: User[] = data?.users;
 
   if (loading) return <p>LOADING...</p>;
-  if (error) return <p>FUCK</p>;
-
-  console.log("data");
-  console.log(data);
+  // if (error) return <p>FUCK</p>;
 
   return (
     <div className={styles.container}>
@@ -93,30 +89,32 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
+      {error && <p>AAAAAAAAAAA</p>}
       <main className={styles.main}>
         <h1 className={styles.title}>
           Welcome to <a href="https://nextjs.org">Next.js!</a>
         </h1>
         <ul>
-          {users.map((user: User) => (
-            <li key={user.id}>
-              <div>
-                <p>{user.id}</p>
-                <p>{user.username}</p>
-                <p>{user.email}</p>
-                <p>{user.image}</p>
-              </div>
-              <button
-                disabled={deleteUserMutationState.loading}
-                onClick={(e) => {
-                  e.preventDefault();
-                  deleteUser({ variables: { id: user.id } });
-                }}
-              >
-                Delete
-              </button>
-            </li>
-          ))}
+          {users &&
+            users.map((user: User) => (
+              <li key={user.id}>
+                <div>
+                  <p>{user.id}</p>
+                  <p>{user.username}</p>
+                  <p>{user.email}</p>
+                  <p>{user.image}</p>
+                </div>
+                <button
+                  disabled={deleteUserMutationState.loading}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    deleteUser({ variables: { id: user.id } });
+                  }}
+                >
+                  Delete
+                </button>
+              </li>
+            ))}
         </ul>
 
         <form
@@ -125,7 +123,6 @@ const Home: NextPage = () => {
             createUser({
               variables: createUserParams,
             });
-            setCreateUserParams(defaultParams);
           }}
         >
           <input
@@ -182,3 +179,10 @@ const Home: NextPage = () => {
 };
 
 export default Home;
+
+/*
+OBSTACLE
+1. User authentication upon resource request
+  - way to authenticate user whenever the request a resource
+
+*/

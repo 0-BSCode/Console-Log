@@ -1,12 +1,14 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { PrismaClient, User } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import prisma from "utils/initializePrisma";
+import { JwtToken } from "types/token";
+import authenticateUser from "./utils/authenticateUser";
 
 export type Context = {
   req: NextApiRequest;
   res: NextApiResponse;
   prisma: PrismaClient;
-  currentUser?: User;
+  currentUser?: Promise<JwtToken>;
 };
 
 export async function createContext({
@@ -20,5 +22,6 @@ export async function createContext({
     req,
     res,
     prisma,
+    currentUser: authenticateUser(req, res),
   };
 }
