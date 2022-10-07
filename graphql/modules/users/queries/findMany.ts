@@ -7,7 +7,7 @@ export default extendType({
       type: User,
       async resolve(_parent, _args, ctx) {
         try {
-          await ctx.currentUser;
+          await ctx.currentUser();
 
           return await ctx.prisma.user.findMany();
         } catch (e) {

@@ -1,5 +1,4 @@
 import { serialize } from "cookie";
-import authenticateUser from "graphql/utils/authenticateUser";
 import generateJwt from "graphql/utils/generateJwt";
 import hashPassword from "graphql/utils/hashPassword";
 import { extendType, nonNull, stringArg } from "nexus";
@@ -34,13 +33,6 @@ export default extendType({
               username,
               email,
               password: hashedPassword,
-            },
-          });
-
-          await ctx.prisma.user_Session.create({
-            data: {
-              userId: newUser.id,
-              accessToken: "123456",
             },
           });
 

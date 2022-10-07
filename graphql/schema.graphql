@@ -4,12 +4,13 @@
 
 type Mutation {
   createUser(email: String!, password: String!, username: String!): user!
-  createUserSession: user_session!
   deleteUser(id: String!): user!
 }
 
 type Query {
-  findUserSession(id: String!): user_session!
+  getCurrentUser: user!
+  logIn(email: String!, password: String!): user!
+  logout: user
   user(email: String!, password: String!): user!
   users: [user]!
 }
@@ -20,11 +21,4 @@ type user {
   image: String
   password: String
   username: String
-}
-
-type user_session {
-  accessToken: String
-  id: String
-  refreshToken: String
-  user: user
 }

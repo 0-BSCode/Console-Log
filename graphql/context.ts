@@ -8,7 +8,7 @@ export type Context = {
   req: NextApiRequest;
   res: NextApiResponse;
   prisma: PrismaClient;
-  currentUser?: Promise<JwtToken>;
+  currentUser?: () => Promise<JwtToken>;
 };
 
 export async function createContext({
@@ -22,6 +22,6 @@ export async function createContext({
     req,
     res,
     prisma,
-    currentUser: authenticateUser(req, res),
+    currentUser: () => authenticateUser(req, res),
   };
 }

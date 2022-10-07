@@ -2,28 +2,21 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
-import { gql, useQuery, useMutation, useLazyQuery } from "@apollo/client";
+import { gql, useMutation, useLazyQuery } from "@apollo/client";
 import { User } from "@prisma/client";
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { UserContext } from "src/context/userContext";
+import { useRouter } from "next/router";
+import { PartialUser } from "types/user";
 
-const AllUsersQuery = gql`
-  query AllUsersQuery {
-    users {
-      id
-      username
-      email
-      image
-    }
-  }
-`;
+interface QueryResults {
+  logIn: PartialUser;
+}
 
-const DeleteUserMutation = gql`
-  mutation DeleteUserMutation($id: String!) {
-    deleteUser(id: $id) {
-      id
-    }
-  }
-`;
+interface QueryVariables {
+  email: string;
+  password: string;
+}
 
 const CreateUserMutation = gql`
   mutation CreateUserMutation(
@@ -39,11 +32,12 @@ const CreateUserMutation = gql`
   }
 `;
 
-const FindUserQuery = gql`
-  query FindUserQuery($email: String!, $password: String!) {
-    user(email: $email, password: $password) {
+const LoginQuery = gql`
+  query LoginQuery($email: String!, $password: String!) {
+    logIn(email: $email, password: $password) {
       id
       email
+      username
     }
   }
 `;
@@ -55,32 +49,25 @@ const defaultParams: Partial<User> = {
 };
 
 const Home: NextPage = () => {
-  const { data, loading, error, fetchMore } = useQuery(AllUsersQuery, {
-    onError: (e) => {
-      alert(`BAD: ${e.message}`);
+  const router = useRouter();
+  const { setCurrentUser } = useContext(UserContext);
+
+  const [getUser, getUserQueryState] = useLazyQuery<
+    QueryResults,
+    QueryVariables
+  >(LoginQuery, {
+    onCompleted: (data) => {
+      setCurrentUser(data.logIn);
+      router.push("/dashboard");
     },
   });
 
-  const [getUser, getUserQueryState] = useLazyQuery(FindUserQuery, {
-    onCompleted: () => {
-      fetchMore({});
-    },
-  });
-
-  const [deleteUser, deleteUserMutationState] = useMutation(
-    DeleteUserMutation,
-    {
-      onCompleted: () => {
-        fetchMore({});
-      },
-    }
-  );
   const [createUser, CreateUserMutationState] = useMutation(
     CreateUserMutation,
     {
       onCompleted: (data) => {
-        fetchMore({});
-        setCreateUserParams(defaultParams);
+        setCurrentUser(data.createUser);
+        router.push("/dashboard");
       },
       onError: (e) => {
         alert(`BAD: ${JSON.stringify(e.message)}`);
@@ -94,11 +81,6 @@ const Home: NextPage = () => {
   const [findUserParams, setFindUserParams] =
     useState<Partial<User>>(defaultParams);
 
-  const users: User[] = data?.users;
-
-  if (loading) return <p>LOADING...</p>;
-  // if (error) return <p>FUCK</p>;
-
   return (
     <div className={styles.container}>
       <Head>
@@ -107,39 +89,19 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      {error && <p>AAAAAAAAAAA</p>}
       <main className={styles.main}>
         <h1 className={styles.title}>
           Welcome to <a href="https://nextjs.org">Next.js!</a>
         </h1>
-        <ul>
-          {users &&
-            users.map((user: User) => (
-              <li key={user.id}>
-                <div>
-                  <p>{user.id}</p>
-                  <p>{user.username}</p>
-                  <p>{user.email}</p>
-                  <p>{user.image}</p>
-                </div>
-                <button
-                  disabled={deleteUserMutationState.loading}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    deleteUser({ variables: { id: user.id } });
-                  }}
-                >
-                  Delete
-                </button>
-              </li>
-            ))}
-        </ul>
 
         <form
           onSubmit={(e) => {
             e.preventDefault();
             getUser({
-              variables: findUserParams,
+              variables: {
+                email: findUserParams.email,
+                password: findUserParams.password,
+              },
             });
           }}
         >
