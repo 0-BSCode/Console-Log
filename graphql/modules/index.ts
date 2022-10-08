@@ -1,5 +1,6 @@
 import userSchema from "./users";
+import noteSchema from "./notes";
 
-const types = [userSchema];
+const types = [userSchema, noteSchema];
 
 export default types;

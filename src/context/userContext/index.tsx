@@ -20,7 +20,11 @@ export const UserProvider = ({
 
   const { data, loading, error } = useQuery<QueryResults>(query, {
     onCompleted: (data) => {
+      console.log(`FETCH USER QUERY COMPLETED: ${JSON.stringify(data)}`);
       setCurrentUser(data.user);
+    },
+    onError: (e) => {
+      console.log(`FETCH USER QUERY ERROR: ${e}`);
     },
   });
 

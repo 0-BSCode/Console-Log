@@ -1,17 +1,29 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { UserContext } from "src/context/userContext";
 import { NextPage } from "next";
-import { gql, useQuery, useLazyQuery } from "@apollo/client";
+import { gql, useQuery, useLazyQuery, useMutation } from "@apollo/client";
 import { useRouter } from "next/router";
-import { User } from "@prisma/client";
+import { Note } from "@prisma/client";
 
-const AllUsersQuery = gql`
-  query AllUsersQuery {
-    users {
+const GetNotesQuery = gql`
+  query GetNotesQuery {
+    notes {
       id
-      username
-      email
-      image
+      title
+      description
+      content
+    }
+  }
+`;
+
+const CreateNoteMutation = gql`
+  mutation CreateNoteMutation(
+    $title: String!
+    $description: String
+    $content: String
+  ) {
+    createNote(title: $title, description: $description, content: $content) {
+      id
     }
   }
 `;
@@ -23,51 +35,115 @@ const LogOutQuery = gql`
     }
   }
 `;
+
 const Dashboard: NextPage = () => {
   const router = useRouter();
-  const { currentUser } = useContext(UserContext);
+  const { currentUser, setCurrentUser } = useContext(UserContext);
+  const [createNoteParams, setCreateNoteParams] = useState<Partial<Note>>({
+    title: "",
+    description: "",
+    content: "",
+  });
 
-  const { data, loading, error, fetchMore } = useQuery(AllUsersQuery, {
-    onError: (e) => {
-      console.error(`BAD: ${e.message}`);
-      router.push("/");
+  const { data, loading, error, fetchMore } = useQuery(GetNotesQuery, {
+    onCompleted: (data) => {
+      console.log("FINDMANY NOTES QUERY COMPLETE");
+      console.log(data);
     },
   });
+
+  const [createNoteMutation, createNoteMutationState] = useMutation(
+    CreateNoteMutation,
+    {
+      onCompleted: () => {
+        console.log("NOTE CREATED");
+        fetchMore({});
+      },
+    }
+  );
 
   const [logOut, logOutQueryState] = useLazyQuery(LogOutQuery, {
     onCompleted: () => {
+      console.log("LOGGED OUT DONE");
+      setCurrentUser({});
       router.push("/");
     },
   });
 
-  const users: User[] = data?.users;
+  const notes: Note[] = data?.notes || [];
 
-  if (loading) return <p>LOADING...</p>;
+  if (loading) return <p>Fetching notes...</p>;
 
   return (
     <div>
       {currentUser && <h1>Welcome, {currentUser.username}</h1>}
-      <ul>
-        {users &&
-          users.map((user: User) => (
-            <li key={user.id}>
-              <div>
-                <p>{user.id}</p>
-                <p>{user.username}</p>
-                <p>{user.email}</p>
-                <p>{user.image}</p>
-              </div>
-            </li>
-          ))}
-      </ul>
+
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          createNoteMutation({
+            variables: {
+              title: createNoteParams.title,
+              description: createNoteParams.description,
+              content: createNoteParams.content,
+            },
+          });
+        }}
+      >
+        <input
+          type={"text"}
+          placeholder={"Title"}
+          value={createNoteParams.title}
+          onChange={(e) =>
+            setCreateNoteParams({
+              ...createNoteParams,
+              title: e.target.value,
+            })
+          }
+        />
+        <input
+          type={"text"}
+          placeholder={"Description"}
+          value={createNoteParams.description}
+          onChange={(e) =>
+            setCreateNoteParams({
+              ...createNoteParams,
+              description: e.target.value,
+            })
+          }
+        />
+        <input
+          type={"text"}
+          placeholder={"Content"}
+          value={createNoteParams.content}
+          onChange={(e) =>
+            setCreateNoteParams({
+              ...createNoteParams,
+              content: e.target.value,
+            })
+          }
+        />
+        <button>CREATE</button>
+      </form>
       <button
         onClick={(e) => {
           e.preventDefault();
-          logOut({});
+          logOut();
         }}
       >
         LOG OUT
       </button>
+      <ul>
+        {notes.length &&
+          notes.map((note) => (
+            <li key={note.id}>
+              <h3>{note.title}</h3>
+              <h6>{note?.description}</h6>
+              <p>{note?.content}</p>
+              <button>Delete</button>
+            </li>
+          ))}
+      </ul>
     </div>
   );
 };

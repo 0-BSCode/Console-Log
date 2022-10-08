@@ -1,5 +1,5 @@
 import { extendType, nonNull, stringArg } from "nexus";
-import User from "../typeDefs";
+import UserObjectType from "../typeDefs";
 import bcrypt from "bcrypt";
 import generateJwt from "graphql/utils/generateJwt";
 import { serialize } from "cookie";
@@ -8,13 +8,14 @@ export default extendType({
   type: "Query",
   definition(t) {
     t.nonNull.field("logIn", {
-      type: User,
+      type: UserObjectType,
       args: {
         email: nonNull(stringArg()),
         password: nonNull(stringArg()),
       },
       async resolve(_parent, { email, password }, ctx) {
         try {
+          console.log("CALLING LOGIN RESOLVER");
           const user = await ctx.prisma.user.findFirst({
             where: {
               email,
@@ -34,6 +35,8 @@ export default extendType({
             "Set-Cookie",
             serialize("token", jwt, { path: "/" })
           );
+
+          console.log("LOGIN RESOLVED");
 
           return user;
         } catch (e) {

@@ -1,14 +1,11 @@
 import { extendType, nonNull, stringArg } from "nexus";
-import User from "../typeDefs";
-import bcrypt from "bcrypt";
-import generateJwt from "graphql/utils/generateJwt";
-import { serialize } from "cookie";
+import UserObjectType from "../typeDefs";
 
 export default extendType({
   type: "Query",
   definition(t) {
     t.nonNull.field("user", {
-      type: User,
+      type: UserObjectType,
       args: {
         email: nonNull(stringArg()),
         password: nonNull(stringArg()),

@@ -1,13 +1,16 @@
 import { objectType } from "nexus";
-import User_Session from "../user_sessions/typeDefs";
 
-export default objectType({
-  name: "user",
+const UserObjectType = objectType({
+  name: "User",
   definition(t) {
     t.string("id");
     t.string("username");
     t.string("email");
     t.string("password");
     t.string("image");
+    t.dateTime("createdAt");
+    t.dateTime("updatedAt");
   },
 });
+
+export default UserObjectType;

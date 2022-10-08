@@ -57,8 +57,12 @@ const Home: NextPage = () => {
     QueryVariables
   >(LoginQuery, {
     onCompleted: (data) => {
+      console.log("LOGIN DONE");
+      console.log(data);
+      console.log("COOKIE");
+      console.log(document.cookie);
       setCurrentUser(data.logIn);
-      router.push("/dashboard");
+      router.push("/dashboard", null);
     },
   });
 
