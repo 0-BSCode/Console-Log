@@ -28,6 +28,14 @@ const CreateNoteMutation = gql`
   }
 `;
 
+const DeleteNoteMutation = gql`
+  mutation DeleteNoteMutation($noteId: String!) {
+    deleteNote(noteId: $noteId) {
+      id
+    }
+  }
+`;
+
 const LogOutQuery = gql`
   query LogOut {
     logout {
@@ -46,6 +54,7 @@ const Dashboard: NextPage = () => {
   });
 
   const { data, loading, error, fetchMore } = useQuery(GetNotesQuery, {
+    fetchPolicy: "network-only",
     onCompleted: (data) => {
       console.log("FINDMANY NOTES QUERY COMPLETE");
       console.log(data);
@@ -62,7 +71,17 @@ const Dashboard: NextPage = () => {
     }
   );
 
+  const [deleteNoteMutation, deleteNoteMutationState] = useMutation(
+    DeleteNoteMutation,
+    {
+      onCompleted: () => {
+        fetchMore({});
+      },
+    }
+  );
+
   const [logOut, logOutQueryState] = useLazyQuery(LogOutQuery, {
+    fetchPolicy: "network-only",
     onCompleted: () => {
       console.log("LOGGED OUT DONE");
       setCurrentUser({});
@@ -71,6 +90,13 @@ const Dashboard: NextPage = () => {
   });
 
   const notes: Note[] = data?.notes || [];
+
+  useEffect(() => {
+    fetchMore({});
+  }, []);
+
+  console.log(`LOGOUT LOADING: ${logOutQueryState.loading}`);
+  console.log(`CREATENOTE LOADING: ${createNoteMutationState.loading}`);
 
   if (loading) return <p>Fetching notes...</p>;
 
@@ -140,7 +166,18 @@ const Dashboard: NextPage = () => {
               <h3>{note.title}</h3>
               <h6>{note?.description}</h6>
               <p>{note?.content}</p>
-              <button>Delete</button>
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  deleteNoteMutation({
+                    variables: {
+                      noteId: note.id,
+                    },
+                  });
+                }}
+              >
+                Delete
+              </button>
             </li>
           ))}
       </ul>

@@ -10,6 +10,7 @@ scalar Date
 type Mutation {
   createNote(content: String, description: String, title: String!): Note!
   createUser(email: String!, password: String!, username: String!): User!
+  deleteNote(noteId: String!): Note!
   deleteUser(id: String!): User!
 }
 

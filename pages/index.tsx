@@ -56,11 +56,8 @@ const Home: NextPage = () => {
     QueryResults,
     QueryVariables
   >(LoginQuery, {
+    fetchPolicy: "network-only",
     onCompleted: (data) => {
-      console.log("LOGIN DONE");
-      console.log(data);
-      console.log("COOKIE");
-      console.log(document.cookie);
       setCurrentUser(data.logIn);
       router.push("/dashboard", null);
     },
@@ -70,7 +67,7 @@ const Home: NextPage = () => {
     CreateUserMutation,
     {
       onCompleted: (data) => {
-        setCurrentUser(data.createUser);
+        setCurrentUser(data.logIn);
         router.push("/dashboard");
       },
       onError: (e) => {
