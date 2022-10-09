@@ -123,8 +123,8 @@ const Dashboard: NextPage = () => {
     fetchPolicy: "network-only",
     onCompleted: () => {
       console.log("LOGGED OUT DONE");
-      setCurrentUser({});
       router.push("/");
+      setCurrentUser({});
     },
   });
 
