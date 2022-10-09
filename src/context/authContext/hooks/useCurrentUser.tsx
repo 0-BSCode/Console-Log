@@ -28,8 +28,6 @@ const useCurrentUser = (): CurrentUserHookResult => {
   const [getUserQuery, getUserQueryState] = useLazyQuery<QueryResults>(query, {
     fetchPolicy: "network-only",
     onCompleted: (data) => {
-      console.log("FETCH USER COMPLETED");
-      console.log(data.user);
       setCurrentUser(data.user);
     },
     onError: (e) => {
@@ -38,7 +36,7 @@ const useCurrentUser = (): CurrentUserHookResult => {
   });
 
   useEffect(() => {
-    console.log("HELLO WORLD");
+    getUserQuery();
   }, []);
 
   return {
