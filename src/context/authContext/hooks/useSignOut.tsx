@@ -1,7 +1,6 @@
 import { gql, QueryResult, useLazyQuery } from "@apollo/client";
 import { PartialUser } from "types/user";
 import { CurrentUserHookResult } from "./useCurrentUser";
-import { useRouter } from "next/router";
 
 interface QueryResults {
   user: PartialUser;
@@ -25,8 +24,6 @@ export interface SignOutHookResults {
 }
 
 const useSignOut = ({ currentUser }: SignOutHookProps) => {
-  const router = useRouter();
-
   const [logOutQuery, logOutQueryState] = useLazyQuery<QueryResults>(query, {
     fetchPolicy: "network-only",
     onCompleted: () => {

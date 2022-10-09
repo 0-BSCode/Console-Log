@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useQuery, gql } from "@apollo/client";
+import { gql, useLazyQuery } from "@apollo/client";
 import { PartialUser } from "types/user";
 
 interface QueryResults {
@@ -23,22 +23,27 @@ export interface CurrentUserHookResult {
 }
 
 const useCurrentUser = (): CurrentUserHookResult => {
-  const [currentUser, setCurrentUser] = useState<PartialUser>();
+  const [currentUser, setCurrentUser] = useState<PartialUser>(undefined);
 
-  const { fetchMore } = useQuery<QueryResults>(query, {
+  const [getUserQuery, getUserQueryState] = useLazyQuery<QueryResults>(query, {
     fetchPolicy: "network-only",
     onCompleted: (data) => {
+      console.log("FETCH USER COMPLETED");
+      console.log(data.user);
       setCurrentUser(data.user);
     },
     onError: (e) => {
-      setCurrentUser({});
       console.error(e.message);
     },
   });
 
+  useEffect(() => {
+    console.log("HELLO WORLD");
+  }, []);
+
   return {
     get: () => currentUser,
-    set: () => fetchMore({}),
+    set: () => getUserQuery(),
     reset: () => setCurrentUser(undefined),
   };
 };

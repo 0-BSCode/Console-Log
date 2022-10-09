@@ -29,7 +29,7 @@ type Query {
   getCurrentUser: User!
   logIn(email: String!, password: String!): User!
   logout: User
-  notes(userId: String): [Note]!
+  notes: [Note]!
   user(email: String!, password: String!): User!
   users: [User]!
 }

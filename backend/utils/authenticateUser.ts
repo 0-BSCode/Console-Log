@@ -1,11 +1,13 @@
+import { PrismaClient } from "@prisma/client";
 import jwt from "jsonwebtoken";
 import { NextApiRequest, NextApiResponse } from "next";
 import { JwtToken } from "types/token";
-import prisma from "utils/initializePrisma";
+import { serialize } from "cookie";
 
 const authenticateUser = async (
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
+  prisma: PrismaClient
 ): Promise<JwtToken> => {
   try {
     const { token } = req.cookies;
@@ -20,7 +22,14 @@ const authenticateUser = async (
       where: { id: verified.id },
     });
 
-    if (!user) throw new Error(`USER DOES NOT EXIST`);
+    if (!user) {
+      res.setHeader(
+        "Set-Cookie",
+        serialize("token", "", { path: "/", maxAge: -1 })
+      );
+
+      throw new Error(`USER DOES NOT EXIST`);
+    }
 
     return verified;
   } catch (e) {

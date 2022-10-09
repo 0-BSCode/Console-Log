@@ -1,6 +1,5 @@
 import { gql, QueryResult, useLazyQuery } from "@apollo/client";
 import { PartialUser } from "types/user";
-import { useRouter } from "next/router";
 import { CurrentUserHookResult } from "./useCurrentUser";
 
 interface QueryVariables {
@@ -32,8 +31,6 @@ export interface SignInHookResults {
 }
 
 const useSignIn = ({ currentUser }: SignInHookProps): SignInHookResults => {
-  const router = useRouter();
-
   const [logInQuery, logInQueryState] = useLazyQuery(query, {
     fetchPolicy: "network-only",
     onCompleted: () => {

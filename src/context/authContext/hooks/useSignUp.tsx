@@ -37,7 +37,6 @@ export interface SignUpHookResults {
 }
 
 const useSignUp = ({ currentUser }: SignUpHookProps): SignUpHookResults => {
-  const router = useRouter();
   const [signUpMutation, signUpMutationState] = useMutation<
     MutationResults,
     MutationVariables

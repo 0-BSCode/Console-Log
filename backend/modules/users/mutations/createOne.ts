@@ -1,6 +1,6 @@
 import { serialize } from "cookie";
-import generateJwt from "graphql/utils/generateJwt";
-import hashPassword from "graphql/utils/hashPassword";
+import generateJwt from "backend/utils/generateJwt";
+import hashPassword from "backend/utils/hashPassword";
 import { extendType, nonNull, stringArg } from "nexus";
 import User from "../typeDefs";
 
@@ -19,13 +19,13 @@ export default extendType({
         if (!username.length || !email.length || !password.length) {
           throw new Error("Please provide username, email, and password");
         }
-        const userWithEmail = await ctx.prisma.user.findMany({
+        const userWithEmail = await ctx.prisma.user.findFirst({
           where: {
             email,
           },
         });
 
-        if (!!userWithEmail.length) {
+        if (userWithEmail) {
           throw new Error("Email is already associated with an account!");
         }
 

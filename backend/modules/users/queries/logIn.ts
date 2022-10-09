@@ -1,7 +1,7 @@
 import { extendType, nonNull, stringArg } from "nexus";
 import UserObjectType from "../typeDefs";
 import bcrypt from "bcrypt";
-import generateJwt from "graphql/utils/generateJwt";
+import generateJwt from "backend/utils/generateJwt";
 import { serialize } from "cookie";
 
 export default extendType({

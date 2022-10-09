@@ -24,10 +24,12 @@ const Home: NextPage = () => {
     useState<PartialUser>(defaultParams);
 
   useEffect(() => {
+    console.log("CURR USER FROM DASHBOARD");
+    console.log(currUser);
     if (currUser) {
       router.push("/dashboard");
     }
-  });
+  }, [currUser]);
 
   return (
     <div className={styles.container}>

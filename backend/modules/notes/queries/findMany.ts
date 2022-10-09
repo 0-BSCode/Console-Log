@@ -1,4 +1,4 @@
-import { extendType, stringArg } from "nexus";
+import { extendType } from "nexus";
 import NoteObjectType from "../typeDefs";
 
 export default extendType({
@@ -6,20 +6,14 @@ export default extendType({
   definition(t) {
     t.nonNull.list.field("notes", {
       type: NoteObjectType,
-      args: {
-        userId: stringArg(),
-      },
-      async resolve(_parent, { userId }, ctx) {
+      async resolve(_parent, _args, ctx) {
         try {
           console.log("CALLING NOTES FINDMANY RESOLVER");
           const user = await ctx.currentUser();
 
-          console.log("CURRENT USER");
-          console.log(user);
-
           const notes = await ctx.prisma.note.findMany({
             where: {
-              userId: userId || user.id,
+              userId: user.id,
             },
             orderBy: [
               {
