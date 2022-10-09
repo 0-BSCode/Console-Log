@@ -1,9 +1,9 @@
 import React, { useContext, useState, useEffect } from "react";
-import { UserContext } from "src/context/userContext";
 import { NextPage } from "next";
 import { gql, useQuery, useLazyQuery, useMutation } from "@apollo/client";
-import { useRouter } from "next/router";
 import { Note } from "@prisma/client";
+import { useAuthContext } from "src/context/authContext";
+import { useRouter } from "next/router";
 
 const GetNotesQuery = gql`
   query GetNotesQuery {
@@ -57,17 +57,10 @@ const EditNoteMutation = gql`
   }
 `;
 
-const LogOutQuery = gql`
-  query LogOut {
-    logout {
-      id
-    }
-  }
-`;
-
 const Dashboard: NextPage = () => {
   const router = useRouter();
-  const { currentUser, setCurrentUser } = useContext(UserContext);
+  const { currUser, signOut } = useAuthContext();
+
   const [createNoteParams, setCreateNoteParams] = useState<Partial<Note>>({
     title: "",
     description: "",
@@ -84,9 +77,8 @@ const Dashboard: NextPage = () => {
 
   const { data, loading, error, fetchMore } = useQuery(GetNotesQuery, {
     fetchPolicy: "network-only",
-    onCompleted: (data) => {
-      console.log("FINDMANY NOTES QUERY COMPLETE");
-      console.log(data);
+    onError: (e) => {
+      console.error(e.message);
     },
   });
 
@@ -94,7 +86,6 @@ const Dashboard: NextPage = () => {
     CreateNoteMutation,
     {
       onCompleted: () => {
-        console.log("NOTE CREATED");
         fetchMore({});
       },
     }
@@ -119,29 +110,18 @@ const Dashboard: NextPage = () => {
     }
   );
 
-  const [logOut, logOutQueryState] = useLazyQuery(LogOutQuery, {
-    fetchPolicy: "network-only",
-    onCompleted: () => {
-      console.log("LOGGED OUT DONE");
-      router.push("/");
-      setCurrentUser({});
-    },
-  });
-
   const notes: Note[] = data?.notes || [];
 
   useEffect(() => {
-    fetchMore({});
-  }, []);
-
-  console.log(`LOGOUT LOADING: ${logOutQueryState.loading}`);
-  console.log(`CREATENOTE LOADING: ${createNoteMutationState.loading}`);
-
+    if (!currUser) {
+      router.push("/");
+    }
+  });
   if (loading) return <p>Fetching notes...</p>;
 
   return (
     <div>
-      {currentUser && <h1>Welcome, {currentUser.username}</h1>}
+      {currUser && <h1>Welcome, {currUser.username}</h1>}
 
       <form
         onSubmit={(e) => {
@@ -193,13 +173,13 @@ const Dashboard: NextPage = () => {
       <button
         onClick={(e) => {
           e.preventDefault();
-          logOut();
+          signOut.execute();
         }}
       >
         LOG OUT
       </button>
       <ul>
-        {notes.length &&
+        {!!notes.length &&
           notes.map((note) => (
             <li key={note.id}>
               {note.id !== editNoteId ? (

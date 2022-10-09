@@ -2,47 +2,12 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
-import { gql, useMutation, useLazyQuery } from "@apollo/client";
-import { User } from "@prisma/client";
-import { useState, useContext } from "react";
-import { UserContext } from "src/context/userContext";
+import { useState, useContext, useEffect } from "react";
+import { useAuthContext } from "src/context/authContext";
 import { useRouter } from "next/router";
 import { PartialUser } from "types/user";
 
-interface QueryResults {
-  logIn: PartialUser;
-}
-
-interface QueryVariables {
-  email: string;
-  password: string;
-}
-
-const CreateUserMutation = gql`
-  mutation CreateUserMutation(
-    $username: String!
-    $email: String!
-    $password: String!
-  ) {
-    createUser(username: $username, email: $email, password: $password) {
-      id
-      username
-      email
-    }
-  }
-`;
-
-const LoginQuery = gql`
-  query LoginQuery($email: String!, $password: String!) {
-    logIn(email: $email, password: $password) {
-      id
-      email
-      username
-    }
-  }
-`;
-
-const defaultParams: Partial<User> = {
+const defaultParams: PartialUser = {
   username: "",
   password: "",
   email: "",
@@ -50,37 +15,19 @@ const defaultParams: Partial<User> = {
 
 const Home: NextPage = () => {
   const router = useRouter();
-  const { setCurrentUser } = useContext(UserContext);
-
-  const [getUser, getUserQueryState] = useLazyQuery<
-    QueryResults,
-    QueryVariables
-  >(LoginQuery, {
-    fetchPolicy: "network-only",
-    onCompleted: (data) => {
-      setCurrentUser(data.logIn);
-      router.push("/dashboard", null);
-    },
-  });
-
-  const [createUser, CreateUserMutationState] = useMutation(
-    CreateUserMutation,
-    {
-      onCompleted: (data) => {
-        setCurrentUser(data.logIn);
-        router.push("/dashboard");
-      },
-      onError: (e) => {
-        alert(`BAD: ${JSON.stringify(e.message)}`);
-      },
-    }
-  );
+  const { signUp, signIn, currUser } = useAuthContext();
 
   const [createUserParams, setCreateUserParams] =
-    useState<Partial<User>>(defaultParams);
+    useState<PartialUser>(defaultParams);
 
   const [findUserParams, setFindUserParams] =
-    useState<Partial<User>>(defaultParams);
+    useState<PartialUser>(defaultParams);
+
+  useEffect(() => {
+    if (currUser) {
+      router.push("/dashboard");
+    }
+  });
 
   return (
     <div className={styles.container}>
@@ -98,11 +45,9 @@ const Home: NextPage = () => {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            getUser({
-              variables: {
-                email: findUserParams.email,
-                password: findUserParams.password,
-              },
+            signIn.execute({
+              email: findUserParams.email,
+              password: findUserParams.password,
             });
           }}
         >
@@ -145,9 +90,7 @@ const Home: NextPage = () => {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            createUser({
-              variables: createUserParams,
-            });
+            signUp.execute({ ...createUserParams });
           }}
         >
           <input

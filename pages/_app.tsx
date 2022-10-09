@@ -2,14 +2,14 @@ import "../styles/globals.css";
 import type { AppProps } from "next/app";
 import apolloClient from "utils/initializeApollo";
 import { ApolloProvider } from "@apollo/client";
-import { UserProvider } from "src/context/userContext";
+import { AuthProvider } from "src/context/authContext";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ApolloProvider client={apolloClient}>
-      <UserProvider>
+      <AuthProvider>
         <Component {...pageProps} />
-      </UserProvider>
+      </AuthProvider>
     </ApolloProvider>
   );
 }
