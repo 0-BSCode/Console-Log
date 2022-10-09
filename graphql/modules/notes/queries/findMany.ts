@@ -21,6 +21,11 @@ export default extendType({
             where: {
               userId: userId || user.id,
             },
+            orderBy: [
+              {
+                updatedAt: "desc",
+              },
+            ],
           });
 
           console.log("NOTES");
