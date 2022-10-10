@@ -14,15 +14,10 @@ const Home: NextPage = () => {
   const { currUser } = useAuthContext();
 
   useEffect(() => {
-    console.log("CURR USER FROM DASHBOARD");
-    console.log(currUser);
     if (currUser) {
       router.push("/dashboard");
     }
   }, [currUser]);
-
-  console.log("HAS ACCOUNT");
-  console.log(hasAccount);
 
   return (
     <Center flexDir={"column"} height={"100vh"}>

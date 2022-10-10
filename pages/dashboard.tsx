@@ -115,8 +115,6 @@ const Dashboard: NextPage = () => {
   const notes: Note[] = data?.notes || [];
 
   useEffect(() => {
-    console.log("CURR USER FROM DASHBOARD");
-    console.log(currUser);
     if (!currUser) {
       router.push("/");
     }
