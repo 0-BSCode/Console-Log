@@ -3,8 +3,8 @@ import { PartialUser } from "types/user";
 import { CurrentUserHookResult } from "./useCurrentUser";
 
 interface QueryVariables {
-  email: string;
-  password: string;
+  email?: string;
+  password?: string;
 }
 
 interface QueryResults {

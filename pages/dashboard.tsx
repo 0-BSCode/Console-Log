@@ -4,6 +4,8 @@ import { gql, useQuery, useLazyQuery, useMutation } from "@apollo/client";
 import { Note } from "@prisma/client";
 import { useAuthContext } from "src/context/authContext";
 import { useRouter } from "next/router";
+import { Progress } from "@chakra-ui/react";
+import PageHeader from "src/components/_common/pageHeader";
 
 const GetNotesQuery = gql`
   query GetNotesQuery {
@@ -119,10 +121,11 @@ const Dashboard: NextPage = () => {
       router.push("/");
     }
   }, [currUser]);
-  if (loading) return <p>Fetching notes...</p>;
+  if (loading) return <Progress size="xs" isIndeterminate />;
 
   return (
     <div>
+      <PageHeader />
       {currUser && <h1>Welcome, {currUser.username}</h1>}
 
       <form
