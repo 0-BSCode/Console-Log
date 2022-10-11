@@ -8,9 +8,12 @@ import {
   Icon,
   Text,
   useColorModeValue,
+  Button,
 } from "@chakra-ui/react";
+import { useRouter } from "next/router";
 
 interface NotesCardProps {
+  id?: string;
   title?: string;
   description?: string;
   content?: string;
@@ -18,7 +21,8 @@ interface NotesCardProps {
 }
 
 const NotesCard = (props: NotesCardProps): ReactElement => {
-  const { title, description, content } = props;
+  const { id, title, description, content } = props;
+  const router = useRouter();
   const defaultAvatar =
     "https://images.unsplash.com/photo-1606513542745-97629752a13b?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=334&q=80";
 
@@ -61,6 +65,9 @@ const NotesCard = (props: NotesCardProps): ReactElement => {
       _hover={{
         cursor: "pointer",
         transform: "scale(1.1)",
+      }}
+      onClick={() => {
+        router.push(`notes/${id}`);
       }}
     >
       <Flex

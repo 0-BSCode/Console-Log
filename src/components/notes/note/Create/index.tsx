@@ -24,7 +24,6 @@ import mutation, { MutationResults, MutationVariables } from "./mutation";
 import { useMutation } from "@apollo/client";
 import { PartialNote } from "types/note";
 import { useRouter } from "next/router";
-import { title } from "process";
 
 const confetti = {
   light: {
@@ -44,13 +43,16 @@ const CONFETTI_DARK = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2
 const CreateNote = (): ReactElement => {
   const router = useRouter();
 
-  const [createNoteParams, setCreateNoteParams] = useState<PartialNote>({
+  const [createNoteParams, setCreateNoteParams] = useState<MutationVariables>({
     title: "",
     description: "",
     content: "",
   });
 
-  const [createNoteMutation, createNoteMutationState] = useMutation(mutation, {
+  const [createNoteMutation, createNoteMutationState] = useMutation<
+    MutationResults,
+    MutationVariables
+  >(mutation, {
     onCompleted: () => {
       router.push("/notes");
     },

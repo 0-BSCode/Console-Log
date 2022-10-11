@@ -1,3 +1,4 @@
+import { Context } from "backend/context";
 import { extendType } from "nexus";
 import NoteObjectType from "../typeDefs";
 
@@ -6,7 +7,7 @@ export default extendType({
   definition(t) {
     t.nonNull.list.field("notes", {
       type: NoteObjectType,
-      async resolve(_parent, _args, ctx) {
+      async resolve(_parent, _args, ctx: Context) {
         try {
           console.log("CALLING NOTES FINDMANY RESOLVER");
           const user = await ctx.currentUser();
