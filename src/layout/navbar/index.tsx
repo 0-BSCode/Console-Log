@@ -20,6 +20,7 @@ import {
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 import { useAuthContext } from "src/context/authContext";
 import { PartialUser } from "types/user";
+import { useRouter } from "next/router";
 
 const NavLink = ({ children }: { children: ReactNode }): ReactElement => (
   <Link
@@ -37,6 +38,7 @@ const NavLink = ({ children }: { children: ReactNode }): ReactElement => (
 );
 
 const Navbar = (): ReactElement => {
+  const router = useRouter();
   const { colorMode, toggleColorMode } = useColorMode();
   const { currUser, signOut } = useAuthContext();
 
@@ -44,14 +46,28 @@ const Navbar = (): ReactElement => {
     <Box bg={useColorModeValue("gray.100", "gray.900")} px={4}>
       <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
         <Box>
-          <chakra.h3
+          <Button
+            fontSize={20}
+            fontWeight={"bold"}
+            variant={"link"}
+            color={"purple.400"}
+            onClick={() => {
+              router.push("/notes");
+            }}
+            _hover={{
+              color: colorMode === "light" ? "black" : "white",
+            }}
+          >
+            {"CONSOLE LOG"}
+          </Button>
+          {/* <chakra.h3
             fontWeight={"bold"}
             fontSize={20}
             textTransform={"uppercase"}
             color={"purple.400"}
           >
             {"Console Log"}
-          </chakra.h3>
+          </chakra.h3> */}
         </Box>
 
         <Flex alignItems={"center"}>
