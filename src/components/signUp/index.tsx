@@ -125,7 +125,7 @@ const SignUp = ({
                     signUp.execute({ ...createUserParams });
                   }}
                 >
-                  Sign in
+                  Sign up
                 </Button>
                 <Stack
                   direction={{ base: "column", sm: "row" }}

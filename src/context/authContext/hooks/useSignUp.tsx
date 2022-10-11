@@ -37,6 +37,7 @@ export interface SignUpHookResults {
 }
 
 const useSignUp = ({ currentUser }: SignUpHookProps): SignUpHookResults => {
+  const router = useRouter();
   const [signUpMutation, signUpMutationState] = useMutation<
     MutationResults,
     MutationVariables
@@ -44,6 +45,7 @@ const useSignUp = ({ currentUser }: SignUpHookProps): SignUpHookResults => {
     fetchPolicy: "network-only",
     onCompleted: () => {
       currentUser.set();
+      router.push("/notes");
     },
     onError: (e) => {
       console.error(e.message);

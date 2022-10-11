@@ -1,23 +1,12 @@
 import type { NextPage } from "next";
-import { useState, useEffect } from "react";
-import { useAuthContext } from "src/context/authContext";
-import { useRouter } from "next/router";
+import { useState } from "react";
 import PageHeader from "src/components/_common/pageHeader";
 import SignIn from "src/components/signIn";
 import SignUp from "src/components/signUp";
 import { Center } from "@chakra-ui/react";
 
 const Home: NextPage = () => {
-  const router = useRouter();
   const [hasAccount, setHasAccount] = useState<boolean>(true);
-
-  const { currUser } = useAuthContext();
-
-  useEffect(() => {
-    if (currUser) {
-      router.push("/dashboard");
-    }
-  }, [currUser]);
 
   return (
     <Center flexDir={"column"} height={"100vh"}>

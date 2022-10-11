@@ -1,11 +1,11 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useState } from "react";
 import { NextPage } from "next";
 import { gql, useQuery, useLazyQuery, useMutation } from "@apollo/client";
 import { Note } from "@prisma/client";
 import { useAuthContext } from "src/context/authContext";
-import { useRouter } from "next/router";
 import { Progress } from "@chakra-ui/react";
 import PageHeader from "src/components/_common/pageHeader";
+import NotesTable from "src/components/notes/Table";
 
 const GetNotesQuery = gql`
   query GetNotesQuery {
@@ -60,8 +60,7 @@ const EditNoteMutation = gql`
 `;
 
 const Dashboard: NextPage = () => {
-  const router = useRouter();
-  const { currUser, signOut } = useAuthContext();
+  const { signOut } = useAuthContext();
 
   const [createNoteParams, setCreateNoteParams] = useState<Partial<Note>>({
     title: "",
@@ -112,20 +111,12 @@ const Dashboard: NextPage = () => {
     }
   );
 
-  const notes: Note[] = data?.notes || [];
-
-  useEffect(() => {
-    if (!currUser) {
-      router.push("/");
-    }
-  }, [currUser]);
   if (loading) return <Progress size="xs" isIndeterminate />;
 
   return (
     <div>
       <PageHeader />
-      {currUser && <h1>Welcome, {currUser.username}</h1>}
-
+      <NotesTable />
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -181,102 +172,6 @@ const Dashboard: NextPage = () => {
       >
         LOG OUT
       </button>
-      <ul>
-        {!!notes.length &&
-          notes.map((note) => (
-            <li key={note.id}>
-              {note.id !== editNoteId ? (
-                <>
-                  <h3>{note.title}</h3>
-                  <h6>{note?.description}</h6>
-                  <p>{note?.content}</p>
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      deleteNoteMutation({
-                        variables: {
-                          noteId: note.id,
-                        },
-                      });
-                    }}
-                  >
-                    Delete
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setEditNoteId(note.id);
-                      setEditNoteParams({
-                        title: note.title,
-                        description: note.description,
-                        content: note.content,
-                      });
-                    }}
-                  >
-                    Edit
-                  </button>
-                </>
-              ) : (
-                <>
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      editNoteMutation({
-                        variables: {
-                          noteId: editNoteId,
-                          ...editNoteParams,
-                        },
-                      });
-                    }}
-                  >
-                    <input
-                      type={"text"}
-                      placeholder={"Title"}
-                      value={editNoteParams.title}
-                      onChange={(e) =>
-                        setEditNoteParams({
-                          ...editNoteParams,
-                          title: e.target.value,
-                        })
-                      }
-                    />
-                    <input
-                      type={"text"}
-                      placeholder={"Description"}
-                      value={editNoteParams.description}
-                      onChange={(e) =>
-                        setEditNoteParams({
-                          ...editNoteParams,
-                          description: e.target.value,
-                        })
-                      }
-                    />
-                    <input
-                      type={"text"}
-                      placeholder={"Content"}
-                      value={editNoteParams.content}
-                      onChange={(e) =>
-                        setEditNoteParams({
-                          ...editNoteParams,
-                          content: e.target.value,
-                        })
-                      }
-                    />
-                    <button type={"submit"}>Edit</button>
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setEditNoteId("");
-                      }}
-                    >
-                      CANCEL
-                    </button>
-                  </form>
-                </>
-              )}
-            </li>
-          ))}
-      </ul>
     </div>
   );
 };

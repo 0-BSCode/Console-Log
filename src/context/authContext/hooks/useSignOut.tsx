@@ -27,7 +27,7 @@ const useSignOut = ({ currentUser }: SignOutHookProps) => {
   const [logOutQuery, logOutQueryState] = useLazyQuery<QueryResults>(query, {
     fetchPolicy: "network-only",
     onCompleted: () => {
-      currentUser.reset();
+      currentUser.set();
     },
     onError: (e) => {
       console.error(e.message);

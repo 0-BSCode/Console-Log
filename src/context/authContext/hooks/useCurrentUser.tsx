@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { gql, useLazyQuery } from "@apollo/client";
+import { gql, useLazyQuery, QueryResult } from "@apollo/client";
 import { PartialUser } from "types/user";
 
 interface QueryResults {
@@ -18,8 +18,8 @@ const query = gql`
 
 export interface CurrentUserHookResult {
   get: () => PartialUser;
+  state: QueryResult<QueryResults>;
   set: () => void;
-  reset: () => void;
 }
 
 const useCurrentUser = (): CurrentUserHookResult => {
@@ -31,6 +31,7 @@ const useCurrentUser = (): CurrentUserHookResult => {
       setCurrentUser(data.user);
     },
     onError: (e) => {
+      setCurrentUser(undefined);
       console.error(e.message);
     },
   });
@@ -41,8 +42,8 @@ const useCurrentUser = (): CurrentUserHookResult => {
 
   return {
     get: () => currentUser,
+    state: getUserQueryState,
     set: () => getUserQuery(),
-    reset: () => setCurrentUser(undefined),
   };
 };
 
