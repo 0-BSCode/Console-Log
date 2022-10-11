@@ -56,7 +56,8 @@ const CreateNote = (): ReactElement => {
     },
   });
 
-  const disableSubmit = !createNoteParams.title.length;
+  const disableSubmit =
+    !createNoteParams.title.length || createNoteMutationState.loading;
 
   return (
     <Flex
