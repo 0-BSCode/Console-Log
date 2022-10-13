@@ -103,8 +103,6 @@ const Navbar = (): ReactElement => {
                 </Center>
                 <br />
                 <MenuDivider />
-                <MenuItem>Your Servers</MenuItem>
-                <MenuItem>Account Settings</MenuItem>
                 <MenuItem
                   onClick={(e) => {
                     e.preventDefault();
