@@ -13,11 +13,11 @@ const schema = makeSchema({
       "nexus-typegen",
       "index.d.ts"
     ),
-    schema: join(process.cwd(), "graphql", "schema.graphql"),
+    schema: join(process.cwd(), "backend", "schema.graphql"),
   },
   contextType: {
     export: "Context",
-    module: join(process.cwd(), "graphql", "context.ts"),
+    module: join(process.cwd(), "backend", "context.ts"),
   },
 });
 

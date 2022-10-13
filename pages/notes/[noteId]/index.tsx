@@ -7,7 +7,7 @@ const ViewNotePage: NextPage = () => {
   const router = useRouter();
   const noteId = router?.query?.noteId as string;
 
-  if (!noteId) router.push("/notes");
+  if (!noteId) router?.push("/notes");
 
   return <NoteView noteId={noteId} />;
 };
