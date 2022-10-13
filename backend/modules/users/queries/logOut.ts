@@ -9,8 +9,6 @@ export default extendType({
       type: UserObjectType,
       async resolve(_parent, _args, ctx) {
         try {
-          console.log("CALLING LOGOUT RESOLVER");
-
           const currUser = await ctx.currentUser();
           const user = await ctx.prisma.user.findFirst({
             where: {
@@ -20,14 +18,10 @@ export default extendType({
 
           if (!user) throw new Error("NO USER ASSOCIATED WITH SESSION");
 
-          console.log("UNSETTING COOKIE");
           ctx.res.setHeader(
             "Set-Cookie",
             serialize("token", "", { path: "/", maxAge: -1 })
           );
-
-          console.log("COOKIE UNSET");
-          console.log("LOGOUT RESOLVED");
           return user;
         } catch (e) {
           console.error(e);

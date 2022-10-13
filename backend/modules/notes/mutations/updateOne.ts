@@ -40,9 +40,6 @@ export default extendType({
             data: updateObject,
           });
 
-          console.log("UPDATED NOTE");
-          console.log(updatedNote);
-
           return updatedNote;
         } catch (e) {
           console.error(e);

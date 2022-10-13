@@ -15,7 +15,6 @@ export default extendType({
         password: nonNull(stringArg()),
       },
       async resolve(_parent, { username, email, password }, ctx) {
-        console.log("CREATE ONE USER RESOLVER");
         if (!username.length || !email.length || !password.length) {
           throw new Error("Please provide username, email, and password");
         }
@@ -46,7 +45,6 @@ export default extendType({
             serialize("token", jwt, { path: "/" })
           );
 
-          console.log("CREATE ONE USER RESOLVED");
           return newUser;
         } catch (e) {
           console.error(e);

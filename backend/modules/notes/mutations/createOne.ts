@@ -13,29 +13,28 @@ export default extendType({
         content: stringArg(),
       },
       async resolve(_parent, { title, description, content }, ctx) {
-        const user = await ctx.currentUser();
+        try {
+          const user = await ctx.currentUser();
+          const owner = await ctx.prisma.user.findFirst({
+            where: {
+              id: user.id,
+            },
+          });
 
-        console.log("USER");
-        console.log(user);
+          const newNote = await ctx.prisma.note.create({
+            data: {
+              userId: user.id,
+              title,
+              description: description || "",
+              content: content || "",
+            },
+          });
 
-        const owner = await ctx.prisma.user.findFirst({
-          where: {
-            id: user.id,
-          },
-        });
-
-        console.log(`USER ID: ${user.id}`);
-
-        const newNote = await ctx.prisma.note.create({
-          data: {
-            userId: user.id,
-            title,
-            description: description || "",
-            content: content || "",
-          },
-        });
-
-        return newNote;
+          return newNote;
+        } catch (e) {
+          console.error(e.message);
+          throw new Error(`ERROR ON NOTE CREATION: ${e.message}`);
+        }
       },
     });
   },

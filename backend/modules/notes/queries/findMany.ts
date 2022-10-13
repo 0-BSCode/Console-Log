@@ -9,7 +9,6 @@ export default extendType({
       type: NoteObjectType,
       async resolve(_parent, _args, ctx: Context) {
         try {
-          console.log("CALLING NOTES FINDMANY RESOLVER");
           const user = await ctx.currentUser();
 
           const notes = await ctx.prisma.note.findMany({
@@ -22,11 +21,6 @@ export default extendType({
               },
             ],
           });
-
-          console.log("NOTES");
-          console.log(notes);
-
-          console.log("NOTES FINDMANY RESOLVED");
           return notes;
         } catch (e) {
           throw new Error(`ERROR ON NOTE RETRIEVAL: ${e}`);

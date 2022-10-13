@@ -15,7 +15,6 @@ export default extendType({
       },
       async resolve(_parent, { email, password }, ctx) {
         try {
-          console.log("CALLING LOGIN RESOLVER");
           const user = await ctx.prisma.user.findFirst({
             where: {
               email,
@@ -35,8 +34,6 @@ export default extendType({
             "Set-Cookie",
             serialize("token", jwt, { path: "/" })
           );
-
-          console.log("LOGIN RESOLVED");
 
           return user;
         } catch (e) {

@@ -67,7 +67,12 @@ const NotesCard = (props: NotesCardProps): ReactElement => {
         transform: "scale(1.1)",
       }}
       onClick={() => {
-        router.push(`notes/${id}`);
+        router.push({
+          pathname: "/notes/[noteId]",
+          query: {
+            noteId: id,
+          },
+        });
       }}
     >
       <Flex

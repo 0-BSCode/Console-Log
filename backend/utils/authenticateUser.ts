@@ -14,7 +14,6 @@ const authenticateUser = async (
 
     const verified = jwt.verify(token, process.env.JWT_SECRET) as JwtToken;
 
-    console.log("AUTHENTICATE USER CALLED");
     if (verified.exp * 1000 < new Date().getTime())
       throw new Error(`SESSION EXPIRED`);
 

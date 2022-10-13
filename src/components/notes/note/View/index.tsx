@@ -72,8 +72,6 @@ const NoteView = ({ noteId }: { noteId: string }): ReactElement => {
     onCompleted: (data) => {
       const { note } = data;
 
-      console.log("NOTE");
-      console.log(note);
       setEditNoteParams({
         ...editNoteParams,
         title: note.title || "",
@@ -101,10 +99,6 @@ const NoteView = ({ noteId }: { noteId: string }): ReactElement => {
       setIsEditing(false);
     },
   });
-
-  console.log(`TITLE: ${editNoteParams.title}`);
-  console.log(`DESCRIPTION: ${editNoteParams.description}`);
-  console.log(`CONTENT: ${editNoteParams.content}`);
 
   if (loading) return <Spinner />;
 
