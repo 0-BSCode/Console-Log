@@ -79,6 +79,7 @@ const NotesTable = (): ReactElement => {
           }}
           display={"flex"}
           width={"full"}
+          height={"100%"}
           onClick={() => {
             router.push("/notes/create");
           }}
