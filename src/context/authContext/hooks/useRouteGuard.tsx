@@ -17,20 +17,14 @@ const useRouteGuard = ({
   const router = useRouter();
   const [currRoute, setCurrentRoute] = useState<string>("/notes");
 
-  // Notes last page user loaded into before being redirected to log in
   useEffect(() => {
-    if (router.route !== "/") {
-      setCurrentRoute(router.route);
+    if (router.isReady) {
+      // No user session seen
+      if (currentUser.state.error) {
+        router.push("/");
+      }
     }
-  }, []);
-
-  useEffect(() => {
-    // No user session seen
-    if (currentUser.state.error) router.push("/");
-    // User has been fetched
-    else if (!currentUser.state.loading && currentUser.state.data)
-      router.push(currRoute);
-  }, [currentUser.state.error, currentUser.state.loading]);
+  }, [currentUser.state.error, router.isReady]);
 
   return {
     get: () => currRoute,
