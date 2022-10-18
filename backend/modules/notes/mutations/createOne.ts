@@ -15,11 +15,6 @@ export default extendType({
       async resolve(_parent, { title, description, content }, ctx) {
         try {
           const user = await ctx.currentUser();
-          const owner = await ctx.prisma.user.findFirst({
-            where: {
-              id: user.id,
-            },
-          });
 
           const newNote = await ctx.prisma.note.create({
             data: {

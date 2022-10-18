@@ -52,6 +52,7 @@ const CONFETTI_DARK = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2
 
 const NoteView = ({ noteId }: { noteId: string }): ReactElement => {
   const router = useRouter();
+
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editNoteParams, setEditNoteParams] =
     useState<UpdateNoteMutationVariables>({

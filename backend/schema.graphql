@@ -9,9 +9,11 @@ scalar Date
 
 type Mutation {
   createNote(content: String, description: String, title: String!): Note!
+  createTopic(description: String, name: String!): Topic!
   createUser(email: String!, password: String!, username: String!): User!
   deleteNote(noteId: String!): Note!
   deleteUser(id: String!): User!
+  topic(name: String!): Topic!
   updateNote(content: String, description: String, noteId: String!, title: String): Note!
 }
 
@@ -21,6 +23,7 @@ type Note {
   description: String
   id: String
   title: String
+  topics: [Topic]
   updatedAt: Date
   user: User!
 }
@@ -33,6 +36,16 @@ type Query {
   notes: [Note]!
   user(email: String!, password: String!): User!
   users: [User]!
+}
+
+type Topic {
+  createdAt: Date
+  description: String
+  id: String
+  name: String
+  notes: [Note]
+  updatedAt: Date
+  user: User!
 }
 
 type User {

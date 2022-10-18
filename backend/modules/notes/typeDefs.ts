@@ -1,6 +1,7 @@
 import { objectType } from "nexus";
-import { Note } from "@prisma/client";
+import { Note, Topic } from "@prisma/client";
 import UserObjectType from "../users/typeDefs";
+import TopicObjectType from "../topics/typeDefs";
 
 const NoteObjectType = objectType({
   name: "Note",
@@ -22,6 +23,23 @@ const NoteObjectType = objectType({
     t.string("title");
     t.string("description");
     t.string("content");
+    t.list.field("topics", {
+      type: TopicObjectType,
+      async resolve(parent: Topic, _, ctx) {
+        await ctx.currentUser();
+        const topics = await ctx.prisma.topic.findMany({
+          where: {
+            notes: {
+              some: {
+                noteId: parent.id,
+              },
+            },
+          },
+        });
+
+        return topics;
+      },
+    });
     t.dateTime("createdAt");
     t.dateTime("updatedAt");
   },

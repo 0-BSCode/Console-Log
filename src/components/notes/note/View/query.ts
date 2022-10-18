@@ -16,6 +16,9 @@ export default gql`
       title
       description
       content
+      topics {
+        id
+      }
     }
   }
 `;
