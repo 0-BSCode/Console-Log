@@ -38,16 +38,13 @@ import fetchTopicsListQuery, {
   TopicsListQueryResults,
 } from "./queries/fetchTopicsListQuery";
 import { useQuery, useMutation } from "@apollo/client";
-import DeleteNoteMutation, {
-  DeleteNoteMutationResults,
-  DeleteNoteMutationVariables,
-} from "./mutations/deleteNote";
 import UpdateNoteMutation, {
   UpdateNoteMutationResults,
   UpdateNoteMutationVariables,
 } from "./mutations/updateNote";
 import { useRouter } from "next/router";
 import CreateTopicModal from "../CreateTopicModal";
+import DeleteNoteModal from "../DeleteModal";
 
 const confetti = {
   light: {
@@ -68,6 +65,7 @@ const NoteView = ({ noteId }: { noteId: string }): ReactElement => {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isTopicModalOpen, setIsTopicModalOpen] = useState<boolean>(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
 
   const [editNoteParams, setEditNoteParams] =
     useState<UpdateNoteMutationVariables>({
@@ -106,15 +104,6 @@ const NoteView = ({ noteId }: { noteId: string }): ReactElement => {
     fetchPolicy: "network-only",
   });
 
-  const [deleteNoteMutation, deleteNoteMutationState] = useMutation<
-    DeleteNoteMutationResults,
-    DeleteNoteMutationVariables
-  >(DeleteNoteMutation, {
-    onCompleted: () => {
-      router.push("/notes");
-    },
-  });
-
   const [updateNoteMutation, updateNoteMutationState] = useMutation<
     UpdateNoteMutationResults,
     UpdateNoteMutationVariables
@@ -136,6 +125,13 @@ const NoteView = ({ noteId }: { noteId: string }): ReactElement => {
         onClose={() => {
           setIsTopicModalOpen(false);
           topicsListFetchMore({});
+        }}
+      />
+      <DeleteNoteModal
+        noteId={noteId}
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
         }}
       />
       <Flex
@@ -296,11 +292,7 @@ const NoteView = ({ noteId }: { noteId: string }): ReactElement => {
                             color="red"
                             flexGrow={"1"}
                             onClick={() => {
-                              deleteNoteMutation({
-                                variables: {
-                                  noteId,
-                                },
-                              });
+                              setIsDeleteModalOpen(true);
                             }}
                           >
                             Delete

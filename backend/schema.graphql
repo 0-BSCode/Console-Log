@@ -12,6 +12,7 @@ type Mutation {
   createTopic(description: String, name: String!): Topic!
   createUser(email: String!, password: String!, username: String!): User!
   deleteNote(noteId: String!): Note!
+  deleteTopic(topicId: String!): Topic!
   deleteUser(id: String!): User!
   topic(name: String!): Topic!
   updateNote(content: String, description: String, noteId: String!, title: String): Note!

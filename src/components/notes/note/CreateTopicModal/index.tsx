@@ -40,7 +40,7 @@ const CreateTopicModal = ({
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Modal Title</ModalHeader>
+        <ModalHeader>Create Topic</ModalHeader>
         <ModalBody>
           <FormControl>
             <FormLabel>Name</FormLabel>
