@@ -114,7 +114,7 @@ const NoteView = ({ noteId }: { noteId: string }): ReactElement => {
     },
   });
 
-  const topics = topicsList?.topics;
+  const topics = topicsList?.topics || [];
 
   if (loading) return <Spinner />;
 

@@ -16,14 +16,26 @@ import {
   useClipboard,
   useColorModeValue,
   VStack,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuOptionGroup,
+  MenuItemOption,
+  MenuDivider,
+  MenuItem,
 } from "@chakra-ui/react";
 import React, { ReactElement, useState } from "react";
 import { BsGithub, BsLinkedin, BsPerson, BsTwitter } from "react-icons/bs";
 import { MdEmail, MdOutlineEmail } from "react-icons/md";
 import mutation, { MutationResults, MutationVariables } from "./mutation";
-import { useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { PartialNote } from "types/note";
 import { useRouter } from "next/router";
+import { AddIcon } from "@chakra-ui/icons";
+import fetchTopicsListQuery, {
+  TopicsListQueryResults,
+} from "./queries/fetchTopicsListQuery";
+import CreateTopicModal from "../CreateTopicModal";
 
 const confetti = {
   light: {
@@ -43,10 +55,12 @@ const CONFETTI_DARK = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2
 const CreateNote = (): ReactElement => {
   const router = useRouter();
 
+  const [isTopicModalOpen, setIsTopicModalOpen] = useState<boolean>(false);
   const [createNoteParams, setCreateNoteParams] = useState<MutationVariables>({
     title: "",
     description: "",
     content: "",
+    topicIds: [],
   });
 
   const [createNoteMutation, createNoteMutationState] = useMutation<
@@ -58,134 +72,181 @@ const CreateNote = (): ReactElement => {
     },
   });
 
+  const {
+    data: topicsList,
+    loading: topicsListLoading,
+    error: topicsListError,
+    fetchMore: topicsListFetchMore,
+  } = useQuery<TopicsListQueryResults>(fetchTopicsListQuery, {
+    fetchPolicy: "network-only",
+  });
+
   const disableSubmit =
     !createNoteParams.title.length || createNoteMutationState.loading;
+  const topics = topicsList?.topics || [];
 
   return (
-    <Flex
-      bg={useColorModeValue("gray.100", "gray.900")}
-      align="center"
-      justify="center"
-      css={{
-        backgroundImage: useColorModeValue(CONFETTI_LIGHT, CONFETTI_DARK),
-        backgroundAttachment: "fixed",
-      }}
-      id="contact"
-    >
-      <Box
-        borderRadius={"lg"}
-        m={{ base: 5, md: 16, lg: 10 }}
-        p={{ base: 5, lg: 16 }}
+    <>
+      <CreateTopicModal
+        isOpen={isTopicModalOpen}
+        onClose={() => {
+          setIsTopicModalOpen(false);
+          topicsListFetchMore({});
+        }}
+      />
+      <Flex
+        bg={useColorModeValue("gray.100", "gray.900")}
+        align="center"
+        justify="center"
+        css={{
+          backgroundImage: useColorModeValue(CONFETTI_LIGHT, CONFETTI_DARK),
+          backgroundAttachment: "fixed",
+        }}
+        id="contact"
       >
-        <Box>
-          <VStack spacing={{ base: 4, md: 8, lg: 20 }}>
-            <Heading
-              fontSize={{
-                base: "4xl",
-                md: "5xl",
-              }}
-            >
-              Creating Note
-            </Heading>
-
-            <Stack
-              spacing={{ base: 4, md: 8, lg: 20 }}
-              direction={{ base: "column", md: "row" }}
-            >
-              <Box
-                width={"lg"}
-                bg={useColorModeValue("white", "gray.700")}
-                borderRadius="lg"
-                p={8}
-                color={useColorModeValue("gray.700", "whiteAlpha.900")}
-                shadow="base"
+        <Box
+          borderRadius={"lg"}
+          m={{ base: 5, md: 16, lg: 10 }}
+          p={{ base: 5, lg: 16 }}
+        >
+          <Box>
+            <VStack spacing={{ base: 4, md: 8, lg: 20 }}>
+              <Heading
+                fontSize={{
+                  base: "4xl",
+                  md: "5xl",
+                }}
               >
-                <VStack spacing={5}>
-                  <FormControl isRequired>
-                    <FormLabel>Title</FormLabel>
+                Creating Note
+              </Heading>
 
-                    <InputGroup>
-                      <InputLeftElement>
-                        <BsPerson />
-                      </InputLeftElement>
-                      <Input
-                        type={"text"}
-                        placeholder={"Give your thought a name"}
-                        value={createNoteParams.title}
+              <Stack
+                spacing={{ base: 4, md: 8, lg: 20 }}
+                direction={{ base: "column", md: "row" }}
+              >
+                <Box
+                  width={"lg"}
+                  bg={useColorModeValue("white", "gray.700")}
+                  borderRadius="lg"
+                  p={8}
+                  color={useColorModeValue("gray.700", "whiteAlpha.900")}
+                  shadow="base"
+                >
+                  <VStack spacing={5}>
+                    <FormControl isRequired>
+                      <FormLabel>Title</FormLabel>
+
+                      <InputGroup>
+                        <Input
+                          type={"text"}
+                          placeholder={"Give your thought a name"}
+                          value={createNoteParams.title}
+                          onChange={(e) => {
+                            setCreateNoteParams({
+                              ...createNoteParams,
+                              title: e.target.value,
+                            });
+                          }}
+                        />
+                      </InputGroup>
+
+                      <br />
+                      <Menu closeOnSelect={false}>
+                        <MenuButton as={Button} colorScheme="blue">
+                          Select Topics
+                        </MenuButton>
+                        <MenuList minWidth="240px">
+                          <MenuItem
+                            icon={<AddIcon />}
+                            onClick={() => setIsTopicModalOpen(true)}
+                          >
+                            Add Topic
+                          </MenuItem>
+                          <MenuDivider />
+                          <MenuOptionGroup
+                            type="checkbox"
+                            onChange={(value) => {
+                              setCreateNoteParams({
+                                ...createNoteParams,
+                                topicIds:
+                                  typeof value === "string"
+                                    ? [value]
+                                    : [...value],
+                              });
+                            }}
+                          >
+                            {topics?.map((topic) => (
+                              <MenuItemOption key={topic.id} value={topic.id}>
+                                {topic.name}
+                              </MenuItemOption>
+                            ))}
+                          </MenuOptionGroup>
+                        </MenuList>
+                      </Menu>
+                    </FormControl>
+
+                    <FormControl>
+                      <FormLabel>Description</FormLabel>
+
+                      <InputGroup>
+                        <Input
+                          type={"text"}
+                          placeholder={"Give your thought a short description"}
+                          value={createNoteParams.description}
+                          onChange={(e) => {
+                            setCreateNoteParams({
+                              ...createNoteParams,
+                              description: e.target.value,
+                            });
+                          }}
+                        />
+                      </InputGroup>
+                    </FormControl>
+
+                    <FormControl>
+                      <FormLabel>Content</FormLabel>
+
+                      <Textarea
+                        name="message"
+                        placeholder="What would you like to write about?"
+                        rows={6}
+                        resize="none"
+                        value={createNoteParams.content}
                         onChange={(e) => {
                           setCreateNoteParams({
                             ...createNoteParams,
-                            title: e.target.value,
+                            content: e.target.value,
                           });
                         }}
                       />
-                    </InputGroup>
-                  </FormControl>
+                    </FormControl>
 
-                  <FormControl>
-                    <FormLabel>Description</FormLabel>
-
-                    <InputGroup>
-                      <InputLeftElement>
-                        <MdOutlineEmail />
-                      </InputLeftElement>
-                      <Input
-                        type={"text"}
-                        placeholder={"Give your thought a short description"}
-                        value={createNoteParams.description}
-                        onChange={(e) => {
-                          setCreateNoteParams({
+                    <Button
+                      disabled={disableSubmit}
+                      colorScheme="blue"
+                      bg="blue.400"
+                      color="white"
+                      _hover={{
+                        bg: "blue.500",
+                      }}
+                      onClick={() => {
+                        createNoteMutation({
+                          variables: {
                             ...createNoteParams,
-                            description: e.target.value,
-                          });
-                        }}
-                      />
-                    </InputGroup>
-                  </FormControl>
-
-                  <FormControl>
-                    <FormLabel>Content</FormLabel>
-
-                    <Textarea
-                      name="message"
-                      placeholder="What would you like to write about?"
-                      rows={6}
-                      resize="none"
-                      value={createNoteParams.content}
-                      onChange={(e) => {
-                        setCreateNoteParams({
-                          ...createNoteParams,
-                          content: e.target.value,
+                          },
                         });
                       }}
-                    />
-                  </FormControl>
-
-                  <Button
-                    disabled={disableSubmit}
-                    colorScheme="blue"
-                    bg="blue.400"
-                    color="white"
-                    _hover={{
-                      bg: "blue.500",
-                    }}
-                    onClick={() => {
-                      createNoteMutation({
-                        variables: {
-                          ...createNoteParams,
-                        },
-                      });
-                    }}
-                  >
-                    Create
-                  </Button>
-                </VStack>
-              </Box>
-            </Stack>
-          </VStack>
+                    >
+                      Create
+                    </Button>
+                  </VStack>
+                </Box>
+              </Stack>
+            </VStack>
+          </Box>
         </Box>
-      </Box>
-    </Flex>
+      </Flex>
+    </>
   );
 };
 

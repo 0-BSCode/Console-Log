@@ -5,6 +5,7 @@ export interface MutationVariables {
   title: string;
   description: string;
   content: string;
+  topicIds: string[];
 }
 
 export interface MutationResults {
@@ -16,11 +17,13 @@ export default gql`
     $title: String!
     $description: String
     $content: String
+    $topicIds: [String]
   ) {
     newNote: createNote(
       title: $title
       description: $description
       content: $content
+      topicIds: $topicIds
     ) {
       id
     }

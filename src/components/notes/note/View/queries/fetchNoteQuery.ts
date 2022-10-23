@@ -18,6 +18,7 @@ export default gql`
       content
       topics {
         id
+        name
       }
     }
   }
