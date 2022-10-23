@@ -1,5 +1,6 @@
-import createNote from "./createOne";
+import createTopic from "./createOne";
+import deleteTopic from "./deleteOne";
 
-const mutations = [createNote];
+const mutations = [createTopic, deleteTopic];
 
 export default mutations;
