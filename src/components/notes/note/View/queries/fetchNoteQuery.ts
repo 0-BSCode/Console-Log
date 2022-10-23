@@ -10,7 +10,7 @@ export interface QueryResults {
 }
 
 export default gql`
-  query GetNoteQuery($noteId: String!) {
+  query FetchNoteQuery($noteId: String!) {
     note(noteId: $noteId) {
       id
       title

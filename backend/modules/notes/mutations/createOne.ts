@@ -1,5 +1,4 @@
-import { Note } from "@prisma/client";
-import { extendType, nonNull, stringArg } from "nexus";
+import { extendType, nonNull, stringArg, list } from "nexus";
 import NoteObjectType from "../typeDefs";
 
 export default extendType({
@@ -11,8 +10,9 @@ export default extendType({
         title: nonNull(stringArg()),
         description: stringArg(),
         content: stringArg(),
+        topicIds: list(stringArg()),
       },
-      async resolve(_parent, { title, description, content }, ctx) {
+      async resolve(_parent, { title, description, content, topicIds }, ctx) {
         try {
           const user = await ctx.currentUser();
 
@@ -24,6 +24,17 @@ export default extendType({
               content: content || "",
             },
           });
+
+          if (topicIds?.length) {
+            await topicIds.forEach(async (id) => {
+              await ctx.prisma.noteTopics.create({
+                data: {
+                  noteId: newNote.id,
+                  topicId: id,
+                },
+              });
+            });
+          }
 
           return newNote;
         } catch (e) {

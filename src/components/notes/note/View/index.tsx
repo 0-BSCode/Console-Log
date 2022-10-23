@@ -21,10 +21,23 @@ import {
   useColorModeValue,
   VStack,
   HStack,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuOptionGroup,
+  MenuItemOption,
+  MenuDivider,
+  MenuItem,
 } from "@chakra-ui/react";
-import query, { QueryResults, QueryVariables } from "./query";
+import { AddIcon } from "@chakra-ui/icons";
+import fetchNoteQuery, {
+  QueryResults,
+  QueryVariables,
+} from "./queries/fetchNoteQuery";
+import fetchTopicsListQuery, {
+  TopicsListQueryResults,
+} from "./queries/fetchTopicsListQuery";
 import { useQuery, useMutation } from "@apollo/client";
-import { PartialNote } from "types/note";
 import DeleteNoteMutation, {
   DeleteNoteMutationResults,
   DeleteNoteMutationVariables,
@@ -34,6 +47,7 @@ import UpdateNoteMutation, {
   UpdateNoteMutationVariables,
 } from "./mutations/updateNote";
 import { useRouter } from "next/router";
+import CreateTopicModal from "../CreateTopicModal";
 
 const confetti = {
   light: {
@@ -52,8 +66,9 @@ const CONFETTI_DARK = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2
 
 const NoteView = ({ noteId }: { noteId: string }): ReactElement => {
   const router = useRouter();
-
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [isTopicModalOpen, setIsTopicModalOpen] = useState<boolean>(false);
+
   const [editNoteParams, setEditNoteParams] =
     useState<UpdateNoteMutationVariables>({
       noteId,
@@ -65,7 +80,7 @@ const NoteView = ({ noteId }: { noteId: string }): ReactElement => {
   const { data, loading, error, fetchMore } = useQuery<
     QueryResults,
     QueryVariables
-  >(query, {
+  >(fetchNoteQuery, {
     fetchPolicy: "network-only",
     variables: {
       noteId,
@@ -80,6 +95,15 @@ const NoteView = ({ noteId }: { noteId: string }): ReactElement => {
         content: note.content || "",
       });
     },
+  });
+
+  const {
+    data: topicsList,
+    loading: topicsListLoading,
+    error: topicsListError,
+    fetchMore: topicsListFetchMore,
+  } = useQuery<TopicsListQueryResults>(fetchTopicsListQuery, {
+    fetchPolicy: "network-only",
   });
 
   const [deleteNoteMutation, deleteNoteMutationState] = useMutation<
@@ -101,183 +125,211 @@ const NoteView = ({ noteId }: { noteId: string }): ReactElement => {
     },
   });
 
+  const topics = topicsList?.topics;
+
   if (loading) return <Spinner />;
 
   return (
-    <Flex
-      bg={useColorModeValue("gray.100", "gray.900")}
-      align="center"
-      justify="center"
-      css={{
-        backgroundImage: useColorModeValue(CONFETTI_LIGHT, CONFETTI_DARK),
-        backgroundAttachment: "fixed",
-      }}
-      id="contact"
-    >
-      <Box
-        borderRadius={"lg"}
-        m={{ base: 5, md: 16, lg: 10 }}
-        p={{ base: 5, lg: 16 }}
+    <>
+      <CreateTopicModal
+        isOpen={isTopicModalOpen}
+        onClose={() => {
+          setIsTopicModalOpen(false);
+          topicsListFetchMore({});
+        }}
+      />
+      <Flex
+        bg={useColorModeValue("gray.100", "gray.900")}
+        align="center"
+        justify="center"
+        css={{
+          backgroundImage: useColorModeValue(CONFETTI_LIGHT, CONFETTI_DARK),
+          backgroundAttachment: "fixed",
+        }}
+        id="contact"
       >
-        <Box>
-          <VStack spacing={{ base: 4, md: 8, lg: 20 }}>
-            <Heading
-              fontSize={{
-                base: "4xl",
-                md: "5xl",
-              }}
-            >
-              Viewing Note
-            </Heading>
-
-            <Stack
-              spacing={{ base: 4, md: 8, lg: 20 }}
-              direction={{ base: "column", md: "row" }}
-            >
-              <Box
-                width={"lg"}
-                bg={useColorModeValue("white", "gray.700")}
-                borderRadius="lg"
-                p={8}
-                color={useColorModeValue("gray.700", "whiteAlpha.900")}
-                shadow="base"
+        <Box
+          borderRadius={"lg"}
+          m={{ base: 5, md: 16, lg: 10 }}
+          p={{ base: 5, lg: 16 }}
+        >
+          <Box>
+            <VStack spacing={{ base: 4, md: 8, lg: 20 }}>
+              <Heading
+                fontSize={{
+                  base: "4xl",
+                  md: "5xl",
+                }}
               >
-                <VStack spacing={5}>
-                  <FormControl isRequired>
-                    <FormLabel>Title</FormLabel>
+                Viewing Note
+              </Heading>
 
-                    <InputGroup>
-                      <InputLeftElement>
-                        <BsPerson />
-                      </InputLeftElement>
-                      <Input
+              <Stack
+                spacing={{ base: 4, md: 8, lg: 20 }}
+                direction={{ base: "column", md: "row" }}
+              >
+                <Box
+                  width={"lg"}
+                  bg={useColorModeValue("white", "gray.700")}
+                  borderRadius="lg"
+                  p={8}
+                  color={useColorModeValue("gray.700", "whiteAlpha.900")}
+                  shadow="base"
+                >
+                  <VStack spacing={5}>
+                    <FormControl isRequired>
+                      <FormLabel>Title</FormLabel>
+
+                      <InputGroup>
+                        <Input
+                          disabled={!isEditing}
+                          type={"text"}
+                          placeholder={"Give your thought a name"}
+                          value={editNoteParams.title}
+                          onChange={(e) => {
+                            setEditNoteParams({
+                              ...editNoteParams,
+                              title: e.target.value,
+                            });
+                          }}
+                        />
+                      </InputGroup>
+
+                      <br />
+                      <Menu closeOnSelect={false}>
+                        <MenuButton as={Button} colorScheme="blue">
+                          Select Topics
+                        </MenuButton>
+                        <MenuList minWidth="240px">
+                          <MenuItem
+                            icon={<AddIcon />}
+                            onClick={() => setIsTopicModalOpen(true)}
+                          >
+                            Add Topic
+                          </MenuItem>
+                          <MenuDivider />
+                          <MenuOptionGroup type="checkbox">
+                            {topics?.map((topic) => (
+                              <MenuItemOption key={topic.id} value={topic.id}>
+                                {topic.name}
+                              </MenuItemOption>
+                            ))}
+                          </MenuOptionGroup>
+                        </MenuList>
+                      </Menu>
+                    </FormControl>
+
+                    <FormControl>
+                      <FormLabel>Description</FormLabel>
+
+                      <InputGroup>
+                        <Input
+                          disabled={!isEditing}
+                          type={"text"}
+                          placeholder={"Give your thought a short description"}
+                          value={editNoteParams.description}
+                          onChange={(e) => {
+                            setEditNoteParams({
+                              ...editNoteParams,
+                              description: e.target.value,
+                            });
+                          }}
+                        />
+                      </InputGroup>
+                    </FormControl>
+
+                    <FormControl>
+                      <FormLabel>Content</FormLabel>
+
+                      <Textarea
                         disabled={!isEditing}
-                        type={"text"}
-                        placeholder={"Give your thought a name"}
-                        value={editNoteParams.title}
+                        name="message"
+                        placeholder="What would you like to write about?"
+                        rows={6}
+                        resize="none"
+                        value={editNoteParams.content}
                         onChange={(e) => {
                           setEditNoteParams({
                             ...editNoteParams,
-                            title: e.target.value,
+                            content: e.target.value,
                           });
                         }}
                       />
-                    </InputGroup>
-                  </FormControl>
+                    </FormControl>
 
-                  <FormControl>
-                    <FormLabel>Description</FormLabel>
-
-                    <InputGroup>
-                      <InputLeftElement>
-                        <MdOutlineEmail />
-                      </InputLeftElement>
-                      <Input
-                        disabled={!isEditing}
-                        type={"text"}
-                        placeholder={"Give your thought a short description"}
-                        value={editNoteParams.description}
-                        onChange={(e) => {
-                          setEditNoteParams({
-                            ...editNoteParams,
-                            description: e.target.value,
-                          });
-                        }}
-                      />
-                    </InputGroup>
-                  </FormControl>
-
-                  <FormControl>
-                    <FormLabel>Content</FormLabel>
-
-                    <Textarea
-                      disabled={!isEditing}
-                      name="message"
-                      placeholder="What would you like to write about?"
-                      rows={6}
-                      resize="none"
-                      value={editNoteParams.content}
-                      onChange={(e) => {
-                        setEditNoteParams({
-                          ...editNoteParams,
-                          content: e.target.value,
-                        });
-                      }}
-                    />
-                  </FormControl>
-
-                  <HStack display={"flex"} width={"100%"}>
-                    {isEditing ? (
-                      <>
-                        <Button
-                          variant={"outline"}
-                          colorScheme="gray"
-                          color="gray"
-                          flexGrow={"1"}
-                          onClick={() => {
-                            setIsEditing(false);
-                          }}
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          colorScheme="blue"
-                          bg="blue.400"
-                          color="white"
-                          _hover={{
-                            bg: "blue.500",
-                          }}
-                          onClick={() => {
-                            updateNoteMutation({
-                              variables: editNoteParams,
-                            });
-                          }}
-                          flexGrow={"1"}
-                        >
-                          Update
-                        </Button>
-                      </>
-                    ) : (
-                      <>
-                        <Button
-                          variant={"outline"}
-                          colorScheme="red"
-                          color="red"
-                          flexGrow={"1"}
-                          onClick={() => {
-                            deleteNoteMutation({
-                              variables: {
-                                noteId,
-                              },
-                            });
-                          }}
-                        >
-                          Delete
-                        </Button>
-                        <Button
-                          colorScheme="blue"
-                          bg="blue.400"
-                          color="white"
-                          _hover={{
-                            bg: "blue.500",
-                          }}
-                          onClick={() => {
-                            setIsEditing(true);
-                          }}
-                          flexGrow={"1"}
-                        >
-                          Edit
-                        </Button>
-                      </>
-                    )}
-                  </HStack>
-                </VStack>
-              </Box>
-            </Stack>
-          </VStack>
+                    <HStack display={"flex"} width={"100%"}>
+                      {isEditing ? (
+                        <>
+                          <Button
+                            variant={"outline"}
+                            colorScheme="gray"
+                            color="gray"
+                            flexGrow={"1"}
+                            onClick={() => {
+                              setIsEditing(false);
+                            }}
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            colorScheme="blue"
+                            bg="blue.400"
+                            color="white"
+                            _hover={{
+                              bg: "blue.500",
+                            }}
+                            onClick={() => {
+                              updateNoteMutation({
+                                variables: editNoteParams,
+                              });
+                            }}
+                            flexGrow={"1"}
+                          >
+                            Update
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button
+                            variant={"outline"}
+                            colorScheme="red"
+                            color="red"
+                            flexGrow={"1"}
+                            onClick={() => {
+                              deleteNoteMutation({
+                                variables: {
+                                  noteId,
+                                },
+                              });
+                            }}
+                          >
+                            Delete
+                          </Button>
+                          <Button
+                            colorScheme="blue"
+                            bg="blue.400"
+                            color="white"
+                            _hover={{
+                              bg: "blue.500",
+                            }}
+                            onClick={() => {
+                              setIsEditing(true);
+                            }}
+                            flexGrow={"1"}
+                          >
+                            Edit
+                          </Button>
+                        </>
+                      )}
+                    </HStack>
+                  </VStack>
+                </Box>
+              </Stack>
+            </VStack>
+          </Box>
         </Box>
-      </Box>
-    </Flex>
+      </Flex>
+    </>
   );
 };
 

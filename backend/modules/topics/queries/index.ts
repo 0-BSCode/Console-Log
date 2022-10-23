@@ -1,5 +1,6 @@
-import findNote from "./findOne";
+import findTopic from "./findOne";
+import findTopics from "./findMany";
 
-const queries = [findNote];
+const queries = [findTopic, findTopics];
 
 export default queries;
