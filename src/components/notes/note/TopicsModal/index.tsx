@@ -75,6 +75,7 @@ const TopicsModal = ({
               <Button
                 variant={"solid"}
                 colorScheme={"blue"}
+                disabled={isLoading || !topicName.length}
                 onClick={() => {
                   createTopicMutation({
                     variables: {

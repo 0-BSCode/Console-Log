@@ -75,6 +75,15 @@ const NoteView = ({ noteId }: { noteId: string }): ReactElement => {
       topicIds: [],
     });
 
+  const [defaultNoteParams, setDefaultNoteParams] =
+    useState<UpdateNoteMutationVariables>({
+      noteId,
+      title: "",
+      description: "",
+      content: "",
+      topicIds: [],
+    });
+
   const { data, loading, error, fetchMore } = useQuery<
     QueryResults,
     QueryVariables
@@ -88,6 +97,14 @@ const NoteView = ({ noteId }: { noteId: string }): ReactElement => {
 
       setEditNoteParams({
         ...editNoteParams,
+        title: note.title || "",
+        description: note.description || "",
+        content: note.content || "",
+        topicIds: note.topics ? note.topics.map((topic) => topic.id) : [],
+      });
+
+      setDefaultNoteParams({
+        ...defaultNoteParams,
         title: note.title || "",
         description: note.description || "",
         content: note.content || "",
@@ -246,6 +263,7 @@ const NoteView = ({ noteId }: { noteId: string }): ReactElement => {
                             flexGrow={"1"}
                             onClick={() => {
                               setIsEditing(false);
+                              setEditNoteParams(defaultNoteParams);
                             }}
                           >
                             Cancel
