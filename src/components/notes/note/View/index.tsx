@@ -66,13 +66,13 @@ const NoteView = ({ noteId }: { noteId: string }): ReactElement => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isTopicModalOpen, setIsTopicModalOpen] = useState<boolean>(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
-
   const [editNoteParams, setEditNoteParams] =
     useState<UpdateNoteMutationVariables>({
       noteId,
       title: "",
       description: "",
       content: "",
+      topicIds: [],
     });
 
   const { data, loading, error, fetchMore } = useQuery<
@@ -91,6 +91,7 @@ const NoteView = ({ noteId }: { noteId: string }): ReactElement => {
         title: note.title || "",
         description: note.description || "",
         content: note.content || "",
+        topicIds: note.topics ? note.topics.map((topic) => topic.id) : [],
       });
     },
   });
@@ -115,6 +116,9 @@ const NoteView = ({ noteId }: { noteId: string }): ReactElement => {
   });
 
   const topics = topicsList?.topics || [];
+  console.log("TOPIC IDS");
+  console.log(topics);
+  console.log(editNoteParams.topicIds);
 
   if (loading) return <Spinner />;
 
@@ -204,9 +208,25 @@ const NoteView = ({ noteId }: { noteId: string }): ReactElement => {
                             Add Topic
                           </MenuItem>
                           <MenuDivider />
-                          <MenuOptionGroup type="checkbox">
+                          <MenuOptionGroup
+                            type="checkbox"
+                            value={editNoteParams.topicIds}
+                            onChange={(value) => {
+                              setEditNoteParams({
+                                ...editNoteParams,
+                                topicIds:
+                                  typeof value === "string"
+                                    ? [value]
+                                    : [...value],
+                              });
+                            }}
+                          >
                             {topics?.map((topic) => (
-                              <MenuItemOption key={topic.id} value={topic.id}>
+                              <MenuItemOption
+                                disabled={isEditing}
+                                key={topic.id}
+                                value={topic.id}
+                              >
                                 {topic.name}
                               </MenuItemOption>
                             ))}

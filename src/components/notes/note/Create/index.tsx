@@ -165,6 +165,7 @@ const CreateNote = (): ReactElement => {
                           <MenuDivider />
                           <MenuOptionGroup
                             type="checkbox"
+                            value={createNoteParams.topicIds}
                             onChange={(value) => {
                               setCreateNoteParams({
                                 ...createNoteParams,

@@ -1,4 +1,5 @@
 import { gql } from "@apollo/client";
+import { Topic } from "@prisma/client";
 import { PartialNote } from "types/note";
 
 export interface QueryVariables {
@@ -6,7 +7,7 @@ export interface QueryVariables {
 }
 
 export interface QueryResults {
-  note: PartialNote;
+  note: PartialNote & { topics: Partial<Topic[]> };
 }
 
 export default gql`

@@ -6,6 +6,7 @@ export interface UpdateNoteMutationVariables {
   title?: string;
   description?: string;
   content?: string;
+  topicIds?: string[];
 }
 
 export interface UpdateNoteMutationResults {
@@ -18,12 +19,14 @@ export default gql`
     $title: String
     $description: String
     $content: String
+    $topicIds: [String]
   ) {
     updateNote(
       noteId: $noteId
       title: $title
       description: $description
       content: $content
+      topicIds: $topicIds
     ) {
       id
     }

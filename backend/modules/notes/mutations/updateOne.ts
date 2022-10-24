@@ -45,11 +45,17 @@ export default extendType({
             data: updateObject,
           });
 
+          await prisma.noteTopics.deleteMany({
+            where: {
+              noteId,
+            },
+          });
+
           if (topicIds?.length) {
             await topicIds.forEach(async (id) => {
               await ctx.prisma.noteTopics.create({
                 data: {
-                  noteId: updatedNote.id,
+                  noteId,
                   topicId: id,
                 },
               });
