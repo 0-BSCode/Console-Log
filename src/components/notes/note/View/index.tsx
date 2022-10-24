@@ -29,14 +29,7 @@ import {
   MenuDivider,
   MenuItem,
 } from "@chakra-ui/react";
-import { AddIcon } from "@chakra-ui/icons";
-import fetchNoteQuery, {
-  QueryResults,
-  QueryVariables,
-} from "./queries/fetchNoteQuery";
-import fetchTopicsListQuery, {
-  TopicsListQueryResults,
-} from "./queries/fetchTopicsListQuery";
+import query, { QueryResults, QueryVariables } from "./query";
 import { useQuery, useMutation } from "@apollo/client";
 import UpdateNoteMutation, {
   UpdateNoteMutationResults,
@@ -87,7 +80,7 @@ const NoteView = ({ noteId }: { noteId: string }): ReactElement => {
   const { data, loading, error, fetchMore } = useQuery<
     QueryResults,
     QueryVariables
-  >(fetchNoteQuery, {
+  >(query, {
     fetchPolicy: "network-only",
     variables: {
       noteId,

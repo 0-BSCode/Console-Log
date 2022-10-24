@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
-import { Topic } from "@prisma/client";
+import { PartialTopic } from "types/topic";
 
-export interface TopicsListQueryResults {
-  topics: Partial<Topic[]>;
+export interface QueryResults {
+  topics: PartialTopic[];
 }
 
 export default gql`

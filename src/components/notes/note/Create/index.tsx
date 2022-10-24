@@ -32,9 +32,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { PartialNote } from "types/note";
 import { useRouter } from "next/router";
 import { AddIcon } from "@chakra-ui/icons";
-import fetchTopicsListQuery, {
-  TopicsListQueryResults,
-} from "./queries/fetchTopicsListQuery";
+import query, { QueryResults } from "./query";
 import TopicsModal from "../TopicsModal";
 
 const confetti = {
@@ -77,7 +75,7 @@ const CreateNote = (): ReactElement => {
     loading: topicsListLoading,
     error: topicsListError,
     fetchMore: topicsListFetchMore,
-  } = useQuery<TopicsListQueryResults>(fetchTopicsListQuery, {
+  } = useQuery<QueryResults>(query, {
     fetchPolicy: "network-only",
   });
 
@@ -91,7 +89,13 @@ const CreateNote = (): ReactElement => {
         isOpen={isTopicModalOpen}
         onClose={() => {
           setIsTopicModalOpen(false);
-          topicsListFetchMore({});
+        }}
+        selectedTopics={createNoteParams.topicIds}
+        onChange={(newValues: string[]) => {
+          setCreateNoteParams({
+            ...createNoteParams,
+            topicIds: newValues,
+          });
         }}
       />
       <Flex
@@ -151,39 +155,13 @@ const CreateNote = (): ReactElement => {
                       </InputGroup>
 
                       <br />
-                      <Menu closeOnSelect={false}>
-                        <MenuButton as={Button} colorScheme="blue">
-                          Select Topics
-                        </MenuButton>
-                        <MenuList minWidth="240px">
-                          <MenuItem
-                            icon={<AddIcon />}
-                            onClick={() => setIsTopicModalOpen(true)}
-                          >
-                            Add Topic
-                          </MenuItem>
-                          <MenuDivider />
-                          <MenuOptionGroup
-                            type="checkbox"
-                            value={createNoteParams.topicIds}
-                            onChange={(value) => {
-                              setCreateNoteParams({
-                                ...createNoteParams,
-                                topicIds:
-                                  typeof value === "string"
-                                    ? [value]
-                                    : [...value],
-                              });
-                            }}
-                          >
-                            {topics?.map((topic) => (
-                              <MenuItemOption key={topic.id} value={topic.id}>
-                                {topic.name}
-                              </MenuItemOption>
-                            ))}
-                          </MenuOptionGroup>
-                        </MenuList>
-                      </Menu>
+                      <Button
+                        onClick={() => {
+                          setIsTopicModalOpen(true);
+                        }}
+                      >
+                        Topics
+                      </Button>
                     </FormControl>
 
                     <FormControl>
