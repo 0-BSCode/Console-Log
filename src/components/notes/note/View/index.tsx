@@ -43,7 +43,7 @@ import UpdateNoteMutation, {
   UpdateNoteMutationVariables,
 } from "./mutations/updateNote";
 import { useRouter } from "next/router";
-import CreateTopicModal from "../CreateTopicModal";
+import TopicsModal from "../TopicsModal";
 import DeleteNoteModal from "../DeleteModal";
 
 const confetti = {
@@ -96,15 +96,6 @@ const NoteView = ({ noteId }: { noteId: string }): ReactElement => {
     },
   });
 
-  const {
-    data: topicsList,
-    loading: topicsListLoading,
-    error: topicsListError,
-    fetchMore: topicsListFetchMore,
-  } = useQuery<TopicsListQueryResults>(fetchTopicsListQuery, {
-    fetchPolicy: "network-only",
-  });
-
   const [updateNoteMutation, updateNoteMutationState] = useMutation<
     UpdateNoteMutationResults,
     UpdateNoteMutationVariables
@@ -115,20 +106,21 @@ const NoteView = ({ noteId }: { noteId: string }): ReactElement => {
     },
   });
 
-  const topics = topicsList?.topics || [];
-  console.log("TOPIC IDS");
-  console.log(topics);
-  console.log(editNoteParams.topicIds);
-
-  if (loading) return <Spinner />;
+  if (loading || updateNoteMutationState.loading) return <Spinner />;
 
   return (
     <>
-      <CreateTopicModal
+      <TopicsModal
         isOpen={isTopicModalOpen}
         onClose={() => {
           setIsTopicModalOpen(false);
-          topicsListFetchMore({});
+        }}
+        selectedTopics={editNoteParams.topicIds}
+        onChange={(newValues: string[]) => {
+          setEditNoteParams({
+            ...editNoteParams,
+            topicIds: newValues,
+          });
         }}
       />
       <DeleteNoteModal
@@ -161,7 +153,7 @@ const NoteView = ({ noteId }: { noteId: string }): ReactElement => {
                   md: "5xl",
                 }}
               >
-                Viewing Note
+                {isEditing ? "Editing Note" : "Viewing Note"}
               </Heading>
 
               <Stack
@@ -196,43 +188,14 @@ const NoteView = ({ noteId }: { noteId: string }): ReactElement => {
                       </InputGroup>
 
                       <br />
-                      <Menu closeOnSelect={false}>
-                        <MenuButton as={Button} colorScheme="blue">
-                          Select Topics
-                        </MenuButton>
-                        <MenuList minWidth="240px">
-                          <MenuItem
-                            icon={<AddIcon />}
-                            onClick={() => setIsTopicModalOpen(true)}
-                          >
-                            Add Topic
-                          </MenuItem>
-                          <MenuDivider />
-                          <MenuOptionGroup
-                            type="checkbox"
-                            value={editNoteParams.topicIds}
-                            onChange={(value) => {
-                              setEditNoteParams({
-                                ...editNoteParams,
-                                topicIds:
-                                  typeof value === "string"
-                                    ? [value]
-                                    : [...value],
-                              });
-                            }}
-                          >
-                            {topics?.map((topic) => (
-                              <MenuItemOption
-                                disabled={isEditing}
-                                key={topic.id}
-                                value={topic.id}
-                              >
-                                {topic.name}
-                              </MenuItemOption>
-                            ))}
-                          </MenuOptionGroup>
-                        </MenuList>
-                      </Menu>
+                      <Button
+                        disabled={!isEditing}
+                        onClick={() => {
+                          setIsTopicModalOpen(true);
+                        }}
+                      >
+                        Topics
+                      </Button>
                     </FormControl>
 
                     <FormControl>

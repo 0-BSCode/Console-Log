@@ -35,7 +35,7 @@ import { AddIcon } from "@chakra-ui/icons";
 import fetchTopicsListQuery, {
   TopicsListQueryResults,
 } from "./queries/fetchTopicsListQuery";
-import CreateTopicModal from "../CreateTopicModal";
+import TopicsModal from "../TopicsModal";
 
 const confetti = {
   light: {
@@ -87,7 +87,7 @@ const CreateNote = (): ReactElement => {
 
   return (
     <>
-      <CreateTopicModal
+      <TopicsModal
         isOpen={isTopicModalOpen}
         onClose={() => {
           setIsTopicModalOpen(false);
