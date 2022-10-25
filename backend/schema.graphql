@@ -16,6 +16,7 @@ type Mutation {
   deleteUser(id: String!): User!
   topic(name: String!): Topic!
   updateNote(content: String, description: String, noteId: String!, title: String, topicIds: [String]): Note!
+  updateTopic(description: String, name: String!, topicId: String!): Topic!
 }
 
 type Note {
@@ -30,11 +31,12 @@ type Note {
 }
 
 type Query {
-  getCurrentUser: User!
+  current_user: User!
   logIn(email: String!, password: String!): User!
   logout: User
   note(noteId: String!): Note!
   notes: [Note]!
+  topic_count: Int!
   topics: [Topic]!
   user(email: String!, password: String!): User!
   users: [User]!

@@ -10,7 +10,7 @@ const Home: NextPage = () => {
 
   return (
     <Center flexDir={"column"} height={"100vh"}>
-      <PageHeader />
+      <PageHeader title={"Console Log"} />
 
       {hasAccount ? (
         <SignIn setHasAccount={setHasAccount} />

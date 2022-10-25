@@ -6,7 +6,7 @@ import NotesTable from "src/components/notes/Table";
 const Dashboard: NextPage = () => {
   return (
     <>
-      <PageHeader />
+      <PageHeader title={"Dashboard"} />
       <NotesTable />
     </>
   );

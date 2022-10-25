@@ -8,7 +8,7 @@ interface QueryResults {
 
 const query = gql`
   query GetCurrentUserQuery {
-    user: getCurrentUser {
+    user: current_user {
       id
       email
       username

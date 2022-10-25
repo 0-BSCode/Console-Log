@@ -104,6 +104,13 @@ const Navbar = (): ReactElement => {
                 <br />
                 <MenuDivider />
                 <MenuItem
+                  onClick={() => {
+                    router.push("/profile");
+                  }}
+                >
+                  Profile
+                </MenuItem>
+                <MenuItem
                   onClick={(e) => {
                     e.preventDefault();
                     signOut.execute();
