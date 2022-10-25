@@ -19,23 +19,25 @@ import {
   BsTrash,
 } from "react-icons/bs";
 import ProfileInformation from "./Information";
-import { useAuthContext } from "src/context/authContext";
 import { useQuery } from "@apollo/client";
 import query, { QueryResults } from "./query";
 import UpdateTopicModal from "./UpdateTopicModal";
+import UpdateProfileModal from "./UpdateProfileModal";
 
 const UserProfile = (): ReactElement => {
-  const { currUser } = useAuthContext();
   const [selectedTopicId, setSelectedTopicId] = useState<string>("");
   const [isTopicModalOpen, setIsTopicModalOpen] = useState<boolean>(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState<boolean>(false);
 
   const { data, loading, error, fetchMore } = useQuery<QueryResults>(query, {
     fetchPolicy: "network-only",
   });
 
+  const currentUser = data?.currentUser;
   const topics = data?.topics || [];
   const topicCount = data?.topic_count || 0;
 
+  console.log(currentUser);
   if (loading) return <Spinner />;
 
   return (
@@ -47,6 +49,14 @@ const UserProfile = (): ReactElement => {
           setIsTopicModalOpen(false);
         }}
         topic={topics.filter((topic) => topic.id === selectedTopicId)[0]}
+      />
+      <UpdateProfileModal
+        isOpen={isProfileModalOpen}
+        onClose={() => {
+          fetchMore({});
+          setIsProfileModalOpen(false);
+        }}
+        user={currentUser}
       />
       <Container
         maxW="5xl"
@@ -67,12 +77,12 @@ const UserProfile = (): ReactElement => {
           <Stack spacing={5}>
             <ProfileInformation
               title={"Username"}
-              stat={currUser?.username}
+              stat={currentUser?.username}
               icon={<BsPerson size={"3em"} />}
             />
             <ProfileInformation
               title={"Email"}
-              stat={currUser?.email}
+              stat={currentUser?.email}
               icon={<BsMailbox size={"3em"} />}
             />
             <Button
@@ -91,6 +101,9 @@ const UserProfile = (): ReactElement => {
               }}
               _focus={{
                 bg: "blue.500",
+              }}
+              onClick={() => {
+                setIsProfileModalOpen(true);
               }}
             >
               Edit

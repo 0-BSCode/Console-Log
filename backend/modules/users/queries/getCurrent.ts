@@ -12,7 +12,7 @@ export default extendType({
 
           const currUser = await ctx.prisma.user.findFirst({
             where: {
-              id: user.userId,
+              id: user.id,
             },
           });
 
