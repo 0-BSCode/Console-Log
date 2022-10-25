@@ -25,9 +25,6 @@ export default extendType({
             updateObject.username = username;
           }
 
-          console.log("CURRENT USER");
-          console.log(user);
-
           //   TODO: Email validation
           if (email.length) {
             const matchingEmail = await ctx.prisma.user.findFirst({
@@ -36,9 +33,6 @@ export default extendType({
                 email,
               },
             });
-
-            console.log("MATCHING USER");
-            console.log(matchingEmail);
 
             if (matchingEmail) throw new Error("Email already exists");
           }
