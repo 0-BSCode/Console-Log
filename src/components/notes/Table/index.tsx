@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useState } from "react";
 import {
   Button,
   Box,
@@ -9,10 +9,15 @@ import {
   SimpleGrid,
   Spinner,
   useColorModeValue,
+  HStack,
+  FormControl,
+  FormLabel,
+  InputGroup,
+  Input,
 } from "@chakra-ui/react";
 import NotesCard from "../note/Card";
 import { useAuthContext } from "src/context/authContext";
-import query, { QueryResults } from "./query";
+import query, { QueryResults, QueryVariables } from "./query";
 import { useQuery } from "@apollo/client";
 import { PartialNote } from "types/note";
 import { AddIcon } from "@chakra-ui/icons";
@@ -21,7 +26,17 @@ import { useRouter } from "next/router";
 const NotesTable = (): ReactElement => {
   const router = useRouter();
   const { currUser } = useAuthContext();
-  const { data, loading, error, fetchMore } = useQuery(query, {
+  const [searchText, setSearchText] = useState<string>("");
+
+  const variables: QueryVariables = {
+    searchText,
+  };
+
+  const { data, loading, error, fetchMore } = useQuery<
+    QueryResults,
+    QueryVariables
+  >(query, {
+    variables,
     fetchPolicy: "network-only",
     onError: (e) => {
       console.error(e.message);
@@ -56,6 +71,23 @@ const NotesTable = (): ReactElement => {
           {"What's on your mind?"}
         </chakra.h2>
       </Box>
+      <HStack justifyContent={"flex-end"} mx={"100"} pt={"5"}>
+        <FormControl>
+          <FormLabel>Search</FormLabel>
+
+          <InputGroup>
+            <Input
+              type={"text"}
+              placeholder={"Search for note title"}
+              value={searchText}
+              onChange={(e) => {
+                setSearchText(e.target.value);
+                fetchMore({ variables });
+              }}
+            />
+          </InputGroup>
+        </FormControl>
+      </HStack>
       <SimpleGrid
         columns={{ base: 1, xl: 2 }}
         spacing={"20"}

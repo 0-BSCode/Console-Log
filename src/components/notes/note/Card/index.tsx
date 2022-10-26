@@ -9,8 +9,10 @@ import {
   Text,
   useColorModeValue,
   Button,
+  HStack,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
+import { PartialTopic } from "types/topic";
 
 interface NotesCardProps {
   id?: string;
@@ -18,14 +20,17 @@ interface NotesCardProps {
   description?: string;
   content?: string;
   index: number;
+  topics?: PartialTopic[];
 }
 
 const NotesCard = (props: NotesCardProps): ReactElement => {
-  const { id, title, description, content } = props;
+  const { id, title, description, content, topics } = props;
   const router = useRouter();
   const defaultAvatar =
     "https://images.unsplash.com/photo-1606513542745-97629752a13b?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=334&q=80";
 
+  console.log("TOPICS");
+  console.log(topics);
   return (
     <Flex
       boxShadow={"lg"}
@@ -94,6 +99,22 @@ const NotesCard = (props: NotesCardProps): ReactElement => {
             {content}
           </chakra.p>
         )}
+        <HStack spacing={2} pt={4}>
+          {topics?.map((topic) => (
+            <chakra.p
+              fontSize={"11px"}
+              key={topic.id}
+              color={"white"}
+              bg={"purple.400"}
+              px={2}
+              py={1}
+              borderRadius={"lg"}
+              fontWeight={"medium"}
+            >
+              {topic.name}
+            </chakra.p>
+          ))}
+        </HStack>
       </Flex>
       {/* TODO: Make this mood icon */}
       <Avatar

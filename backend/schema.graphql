@@ -36,7 +36,7 @@ type Query {
   logIn(email: String!, password: String!): User!
   logout: User
   note(noteId: String!): Note!
-  notes: [Note]!
+  notes(searchText: String): [Note]!
   topic_count: Int!
   topics: [Topic]!
   user(email: String!, password: String!): User!
