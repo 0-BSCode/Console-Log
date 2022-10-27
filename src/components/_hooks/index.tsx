@@ -5,7 +5,7 @@ interface ToastProps {
   status: "success" | "info" | "warning" | "error";
 }
 
-const CustomToast = () => {
+const useCustomToast = () => {
   const toast = useToast();
   // types are: "success", "info", "warning", "error"
 
@@ -22,4 +22,4 @@ const CustomToast = () => {
   return { addToast };
 };
 
-export default CustomToast;
+export default useCustomToast;

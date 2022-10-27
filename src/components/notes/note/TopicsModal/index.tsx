@@ -20,7 +20,7 @@ import {
 import { useMutation, useQuery } from "@apollo/client";
 import mutation, { MutationVariables, MutationResults } from "./mutation";
 import query, { QueryResults } from "./query";
-import CustomToast from "src/utils/createNotification";
+import useCustomToast from "src/components/_hooks";
 
 export interface CreateNoteModalProps {
   isOpen: boolean;
@@ -35,7 +35,7 @@ const TopicsModal = ({
   selectedTopics,
   onChange,
 }: CreateNoteModalProps): ReactElement => {
-  const toast = CustomToast();
+  const toast = useCustomToast();
   const [topicName, setTopicName] = useState<string>("");
 
   const { data, loading, error, fetchMore } = useQuery<QueryResults>(query, {

@@ -21,7 +21,7 @@ import {
 import { useMutation } from "@apollo/client";
 import { PartialUser } from "types/user";
 import mutation, { MutationResults, MutationVariables } from "./mutation";
-import CustomToast from "src/utils/createNotification";
+import useCustomToast from "src/components/_hooks";
 
 interface UpdateTopicModalProps {
   isOpen: boolean;
@@ -34,7 +34,7 @@ const UpdateProfileModal = ({
   onClose,
   user,
 }: UpdateTopicModalProps): ReactElement => {
-  const toast = CustomToast();
+  const toast = useCustomToast();
   const [editProfileParams, setEditProfileParams] = useState<PartialUser>({
     id: user?.id || "",
     username: user?.username || "",

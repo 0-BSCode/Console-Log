@@ -29,7 +29,7 @@ import EditTopicMutation, {
   EditTopicMutationVariables,
 } from "./mutations/updateTopicMutation";
 import { useAuthContext } from "src/context/authContext";
-import CustomToast from "src/utils/createNotification";
+import useCustomToast from "src/components/_hooks";
 
 interface UpdateTopicModalProps {
   isOpen: boolean;
@@ -42,7 +42,7 @@ const UpdateTopicModal = ({
   onClose,
   topic,
 }: UpdateTopicModalProps): ReactElement => {
-  const toast = CustomToast();
+  const toast = useCustomToast();
   const [editTopicParams, setEditTopicParams] = useState<PartialTopic>({
     id: topic?.id || "",
     name: topic?.name || "",

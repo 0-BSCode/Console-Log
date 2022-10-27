@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { useMutation } from "@apollo/client";
 import mutation, { MutationVariables, MutationResults } from "./mutation";
-import CustomToast from "src/utils/createNotification";
+import useCustomToast from "src/components/_hooks";
 
 export interface CreateNoteModalProps {
   noteId: string;
@@ -29,7 +29,7 @@ const DeleteNoteModal = ({
   isOpen,
   onClose,
 }: CreateNoteModalProps): ReactElement => {
-  const toast = CustomToast();
+  const toast = useCustomToast();
   const router = useRouter();
 
   const [deleteNoteMutation, deleteNoteMutationState] = useMutation<

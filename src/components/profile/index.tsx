@@ -37,7 +37,6 @@ const UserProfile = (): ReactElement => {
   const topics = data?.topics || [];
   const topicCount = data?.topic_count || 0;
 
-  console.log(currentUser);
   if (loading) return <Spinner />;
 
   return (
