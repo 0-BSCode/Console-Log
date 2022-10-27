@@ -1,6 +1,6 @@
 import "../styles/globals.css";
 import type { AppProps } from "next/app";
-import apolloClient from "src/utils/initializeApollo";
+import apolloClient from "src/_utils/initializeApollo";
 import { ApolloProvider } from "@apollo/client";
 import { AuthProvider } from "src/context/authContext";
 import { ChakraProvider } from "@chakra-ui/react";

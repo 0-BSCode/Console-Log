@@ -17,11 +17,17 @@ import {
   HStack,
   Spinner,
   useToast,
+  Icon,
+  FormErrorMessage,
 } from "@chakra-ui/react";
 import { useMutation } from "@apollo/client";
 import { PartialUser } from "types/user";
 import mutation, { MutationResults, MutationVariables } from "./mutation";
 import useCustomToast from "src/components/_hooks/useCustomToast";
+import { useForm } from "react-hook-form";
+import FileUpload, { FormValue } from "src/components/_common/fileUpload";
+import validateFiles from "src/_utils/validateFiles";
+import { FiFile } from "react-icons/fi";
 
 interface UpdateTopicModalProps {
   isOpen: boolean;
@@ -34,6 +40,12 @@ const UpdateProfileModal = ({
   onClose,
   user,
 }: UpdateTopicModalProps): ReactElement => {
+  const {
+    control,
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValue>();
   const toast = useCustomToast();
   const [editProfileParams, setEditProfileParams] = useState<PartialUser>({
     id: user?.id || "",
@@ -95,6 +107,22 @@ const UpdateProfileModal = ({
                   }}
                 />
               </InputGroup>
+            </FormControl>
+
+            <FormControl isInvalid={!!errors.file_} isRequired>
+              <FileUpload
+                name="avatar"
+                acceptedFileTypes="image/*"
+                isRequired={true}
+                placeholder="Your avatar"
+                control={control}
+              >
+                Profile picture
+              </FileUpload>
+
+              <FormErrorMessage>
+                {errors.file_ && errors?.file_.message}
+              </FormErrorMessage>
             </FormControl>
           </VStack>
         </ModalBody>
