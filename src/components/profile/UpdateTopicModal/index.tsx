@@ -16,6 +16,7 @@ import {
   chakra,
   HStack,
   Spinner,
+  useToast,
 } from "@chakra-ui/react";
 import { useMutation } from "@apollo/client";
 import { PartialTopic } from "types/topic";
@@ -27,6 +28,8 @@ import EditTopicMutation, {
   EditTopicMutationResults,
   EditTopicMutationVariables,
 } from "./mutations/updateTopicMutation";
+import { useAuthContext } from "src/context/authContext";
+import CustomToast from "src/utils/createNotification";
 
 interface UpdateTopicModalProps {
   isOpen: boolean;
@@ -39,6 +42,7 @@ const UpdateTopicModal = ({
   onClose,
   topic,
 }: UpdateTopicModalProps): ReactElement => {
+  const toast = CustomToast();
   const [editTopicParams, setEditTopicParams] = useState<PartialTopic>({
     id: topic?.id || "",
     name: topic?.name || "",
@@ -50,6 +54,7 @@ const UpdateTopicModal = ({
     DeleteTopicMutationVariables
   >(DeleteTopicMutation, {
     onCompleted: () => {
+      toast.addToast({ description: "Deleted topic", status: "success" });
       onClose();
     },
   });
@@ -59,6 +64,7 @@ const UpdateTopicModal = ({
     EditTopicMutationVariables
   >(EditTopicMutation, {
     onCompleted: () => {
+      toast.addToast({ description: "Updated topic", status: "success" });
       onClose();
     },
   });

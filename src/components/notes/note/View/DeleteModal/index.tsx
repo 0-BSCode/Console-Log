@@ -12,9 +12,11 @@ import {
   FormLabel,
   InputGroup,
   Input,
+  useToast,
 } from "@chakra-ui/react";
 import { useMutation } from "@apollo/client";
 import mutation, { MutationVariables, MutationResults } from "./mutation";
+import CustomToast from "src/utils/createNotification";
 
 export interface CreateNoteModalProps {
   noteId: string;
@@ -27,6 +29,7 @@ const DeleteNoteModal = ({
   isOpen,
   onClose,
 }: CreateNoteModalProps): ReactElement => {
+  const toast = CustomToast();
   const router = useRouter();
 
   const [deleteNoteMutation, deleteNoteMutationState] = useMutation<
@@ -34,6 +37,10 @@ const DeleteNoteModal = ({
     MutationVariables
   >(mutation, {
     onCompleted: () => {
+      toast.addToast({
+        description: "Note successfully deleted!",
+        status: "success",
+      });
       onClose();
       router.push("/notes");
     },

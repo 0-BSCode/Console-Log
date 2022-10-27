@@ -16,10 +16,12 @@ import {
   chakra,
   HStack,
   Spinner,
+  useToast,
 } from "@chakra-ui/react";
 import { useMutation } from "@apollo/client";
 import { PartialUser } from "types/user";
 import mutation, { MutationResults, MutationVariables } from "./mutation";
+import CustomToast from "src/utils/createNotification";
 
 interface UpdateTopicModalProps {
   isOpen: boolean;
@@ -32,6 +34,7 @@ const UpdateProfileModal = ({
   onClose,
   user,
 }: UpdateTopicModalProps): ReactElement => {
+  const toast = CustomToast();
   const [editProfileParams, setEditProfileParams] = useState<PartialUser>({
     id: user?.id || "",
     username: user?.username || "",
@@ -43,6 +46,10 @@ const UpdateProfileModal = ({
     MutationVariables
   >(mutation, {
     onCompleted: () => {
+      toast.addToast({
+        description: "Updated profile",
+        status: "success",
+      });
       onClose();
     },
   });

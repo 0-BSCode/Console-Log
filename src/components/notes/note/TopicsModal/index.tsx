@@ -15,10 +15,12 @@ import {
   Checkbox,
   Stack,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import { useMutation, useQuery } from "@apollo/client";
 import mutation, { MutationVariables, MutationResults } from "./mutation";
 import query, { QueryResults } from "./query";
+import CustomToast from "src/utils/createNotification";
 
 export interface CreateNoteModalProps {
   isOpen: boolean;
@@ -33,6 +35,7 @@ const TopicsModal = ({
   selectedTopics,
   onChange,
 }: CreateNoteModalProps): ReactElement => {
+  const toast = CustomToast();
   const [topicName, setTopicName] = useState<string>("");
 
   const { data, loading, error, fetchMore } = useQuery<QueryResults>(query, {
@@ -44,7 +47,10 @@ const TopicsModal = ({
     MutationVariables
   >(mutation, {
     onCompleted: (data) => {
-      console.log(`Created new topic ${data.newTopic.name}`);
+      toast.addToast({
+        description: "Successfully created topic",
+        status: "success",
+      });
       setTopicName("");
       fetchMore({});
     },
