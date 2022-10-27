@@ -29,7 +29,7 @@ import EditTopicMutation, {
   EditTopicMutationVariables,
 } from "./mutations/updateTopicMutation";
 import { useAuthContext } from "src/context/authContext";
-import useCustomToast from "src/components/_hooks";
+import useCustomToast from "src/components/_hooks/useCustomToast";
 
 interface UpdateTopicModalProps {
   isOpen: boolean;

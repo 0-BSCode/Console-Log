@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { useMutation } from "@apollo/client";
 import mutation, { MutationVariables, MutationResults } from "./mutation";
-import useCustomToast from "src/components/_hooks";
+import useCustomToast from "src/components/_hooks/useCustomToast";
 
 export interface CreateNoteModalProps {
   noteId: string;

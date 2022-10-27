@@ -20,7 +20,7 @@ import {
 import { useMutation, useQuery } from "@apollo/client";
 import mutation, { MutationVariables, MutationResults } from "./mutation";
 import query, { QueryResults } from "./query";
-import useCustomToast from "src/components/_hooks";
+import useCustomToast from "src/components/_hooks/useCustomToast";
 
 export interface CreateNoteModalProps {
   isOpen: boolean;

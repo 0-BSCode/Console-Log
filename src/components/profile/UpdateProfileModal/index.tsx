@@ -21,7 +21,7 @@ import {
 import { useMutation } from "@apollo/client";
 import { PartialUser } from "types/user";
 import mutation, { MutationResults, MutationVariables } from "./mutation";
-import useCustomToast from "src/components/_hooks";
+import useCustomToast from "src/components/_hooks/useCustomToast";
 
 interface UpdateTopicModalProps {
   isOpen: boolean;
