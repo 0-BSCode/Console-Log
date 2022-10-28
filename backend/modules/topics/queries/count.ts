@@ -10,7 +10,7 @@ export default extendType({
 
           const topics = await ctx.prisma.topic.findMany({
             where: {
-              userId: user.userId,
+              userId: user.id,
             },
           });
 

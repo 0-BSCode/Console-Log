@@ -130,30 +130,34 @@ const UserProfile = (): ReactElement => {
             justifyContent={"space-between"}
           >
             <chakra.h6 fontSize={"2xl"} fontWeight={"bold"}>
-              Topics ({topicCount})
+              {topicCount > 0 ? `Topics (${topicCount})` : "Topics"}
             </chakra.h6>
           </Stack>
           <Stack direction={"row"}>
-            {topics?.map((topic) => (
-              <Button
-                key={topic.id}
-                px={8}
-                bg={"purple.400"}
-                color={"white"}
-                rounded={"md"}
-                _hover={{
-                  transform: "translateY(-2px)",
-                  boxShadow: "lg",
-                }}
-                fontWeight={"medium"}
-                onClick={() => {
-                  setSelectedTopicId(topic.id);
-                  setIsTopicModalOpen(true);
-                }}
-              >
-                {topic.name}
-              </Button>
-            ))}
+            {topics?.length ? (
+              topics?.map((topic) => (
+                <Button
+                  key={topic.id}
+                  px={8}
+                  bg={"purple.400"}
+                  color={"white"}
+                  rounded={"md"}
+                  _hover={{
+                    transform: "translateY(-2px)",
+                    boxShadow: "lg",
+                  }}
+                  fontWeight={"medium"}
+                  onClick={() => {
+                    setSelectedTopicId(topic.id);
+                    setIsTopicModalOpen(true);
+                  }}
+                >
+                  {topic.name}
+                </Button>
+              ))
+            ) : (
+              <chakra.p textAlign={"center"}>No topics yet</chakra.p>
+            )}
           </Stack>
         </Stack>
       </Container>
