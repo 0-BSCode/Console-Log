@@ -14,6 +14,7 @@ export default gql`
       id
       username
       email
+      image
     }
 
     topics {

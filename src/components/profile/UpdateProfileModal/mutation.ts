@@ -4,6 +4,7 @@ import { PartialUser } from "types/user";
 export interface MutationVariables {
   username: string;
   email: string;
+  image?: string;
 }
 
 export interface MutationResults {
@@ -11,8 +12,12 @@ export interface MutationResults {
 }
 
 export default gql`
-  mutation UpdateProfileMutation($username: String!, $email: String!) {
-    updatedUser: updateUser(username: $username, email: $email) {
+  mutation UpdateProfileMutation(
+    $username: String!
+    $email: String!
+    $image: String
+  ) {
+    updatedUser: updateUser(username: $username, email: $email, image: $image) {
       id
     }
   }

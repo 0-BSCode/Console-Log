@@ -8,43 +8,54 @@ import {
   Icon,
 } from "@chakra-ui/react";
 import { FiFile } from "react-icons/fi";
-import { useController } from "react-hook-form";
-import { useRef } from "react";
+import { Control, useController } from "react-hook-form";
+import { Dispatch, ReactElement, SetStateAction, useRef } from "react";
 
 export type FormValue = {
   file_: FileList;
 };
 
+interface Props {
+  fileUpload: File;
+  setFileUpload: Dispatch<SetStateAction<File>>;
+  control: Control<FormValue>;
+  name?: string;
+  placeholder?: string;
+  acceptedFileTypes?: string;
+  label?: string;
+  isRequired?: boolean;
+}
+
 export const FileUpload = ({
+  fileUpload,
+  setFileUpload,
   name,
   placeholder,
   acceptedFileTypes,
   control,
-  children,
-  isRequired = false,
-}) => {
+  label,
+  isRequired,
+}: Props) => {
   const inputRef = useRef();
   const {
     field: { ref, onChange, value, ...inputProps },
     fieldState: { invalid, isTouched, isDirty },
-  } = useController({
+  } = useController<FormValue>({
     name,
     control,
     rules: { required: isRequired },
   });
 
-  console.log(value);
-
   return (
     <FormControl isInvalid={invalid} isRequired>
-      <FormLabel htmlFor="writeUpFile">{children}</FormLabel>
+      <FormLabel htmlFor="writeUpFile">{label}</FormLabel>
       <InputGroup>
         <InputLeftElement pointerEvents="none">
           <Icon as={FiFile} />
         </InputLeftElement>
         <input
           type="file"
-          onChange={(e) => onChange(e.target.files[0])}
+          onChange={(e) => setFileUpload(e.target.files[0])}
           accept={acceptedFileTypes}
           name={name}
           ref={inputRef}
@@ -53,9 +64,11 @@ export const FileUpload = ({
         />
         <Input
           placeholder={placeholder || "Your file ..."}
-          onClick={() => inputRef.current.click()}
+          onClick={() => {
+            inputRef.current.click();
+          }}
           readOnly={true}
-          value={(value && value.name) || ""}
+          value={(fileUpload && fileUpload.name) || ""}
         />
       </InputGroup>
       <FormErrorMessage>{invalid}</FormErrorMessage>

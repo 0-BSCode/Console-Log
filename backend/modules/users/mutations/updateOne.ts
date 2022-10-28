@@ -10,14 +10,13 @@ export default extendType({
       args: {
         username: nonNull(stringArg()),
         email: nonNull(stringArg()),
+        image: stringArg(),
       },
-      async resolve(_parents, { username, email }, ctx) {
+      async resolve(_parents, { username, email, image }, ctx) {
         try {
           const user = await ctx.currentUser();
 
-          const updateObject: Partial<User> = {
-            // email,
-          };
+          const updateObject: Partial<User> = {};
 
           if (username.length < 10) {
             throw new Error("Username not long enough");
@@ -34,7 +33,15 @@ export default extendType({
               },
             });
 
-            if (matchingEmail) throw new Error("Email already exists");
+            if (matchingEmail) {
+              throw new Error("Email already exists");
+            } else {
+              updateObject.email = email;
+            }
+          }
+
+          if (image.length) {
+            updateObject.image = image;
           }
 
           const updatedUser = await ctx.prisma.user.update({

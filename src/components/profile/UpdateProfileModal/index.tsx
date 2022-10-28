@@ -28,6 +28,7 @@ import { useForm } from "react-hook-form";
 import FileUpload, { FormValue } from "src/components/_common/fileUpload";
 import validateFiles from "src/_utils/validateFiles";
 import { FiFile } from "react-icons/fi";
+import uploadImage from "src/_utils/uploadImage";
 
 interface UpdateTopicModalProps {
   isOpen: boolean;
@@ -47,6 +48,9 @@ const UpdateProfileModal = ({
     formState: { errors },
   } = useForm<FormValue>();
   const toast = useCustomToast();
+  const [imgUploading, setImgUploading] = useState<boolean>(false);
+  const [imgUpload, setImgUpload] = useState<File>(null);
+
   const [editProfileParams, setEditProfileParams] = useState<PartialUser>({
     id: user?.id || "",
     username: user?.username || "",
@@ -66,7 +70,7 @@ const UpdateProfileModal = ({
     },
   });
 
-  const loading = updateProfileMutationState.loading;
+  const loading = updateProfileMutationState.loading || imgUploading;
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -111,14 +115,15 @@ const UpdateProfileModal = ({
 
             <FormControl isInvalid={!!errors.file_} isRequired>
               <FileUpload
+                fileUpload={imgUpload}
+                setFileUpload={setImgUpload}
                 name="avatar"
                 acceptedFileTypes="image/*"
                 isRequired={true}
                 placeholder="Your avatar"
                 control={control}
-              >
-                Profile picture
-              </FileUpload>
+                label={"Profile Picture"}
+              />
 
               <FormErrorMessage>
                 {errors.file_ && errors?.file_.message}
@@ -135,11 +140,16 @@ const UpdateProfileModal = ({
             <Button
               colorScheme="blue"
               disabled={loading}
-              onClick={() => {
+              onClick={async () => {
+                setImgUploading(true);
+                const imgUrl = await uploadImage(imgUpload);
+                setImgUploading(false);
+
                 updateProfileMutation({
                   variables: {
                     username: editProfileParams.username || "",
                     email: editProfileParams.email || "",
+                    image: imgUrl || "",
                   },
                 });
               }}

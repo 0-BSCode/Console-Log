@@ -84,18 +84,12 @@ const Navbar = (): ReactElement => {
                 cursor={"pointer"}
                 minW={0}
               >
-                <Avatar
-                  size={"sm"}
-                  src={"https://avatars.dicebear.com/api/male/username.svg"}
-                />
+                <Avatar size={"sm"} src={currUser?.image} />
               </MenuButton>
               <MenuList alignItems={"center"}>
                 <br />
                 <Center>
-                  <Avatar
-                    size={"2xl"}
-                    src={"https://avatars.dicebear.com/api/male/username.svg"}
-                  />
+                  <Avatar size={"2xl"} src={currUser?.image} />
                 </Center>
                 <br />
                 <Center>

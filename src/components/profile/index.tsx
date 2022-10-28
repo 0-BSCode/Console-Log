@@ -10,6 +10,10 @@ import {
   Image,
   Button,
   Spinner,
+  Avatar,
+  Center,
+  Wrap,
+  WrapItem,
 } from "@chakra-ui/react";
 import {
   BsPerson,
@@ -108,15 +112,14 @@ const UserProfile = (): ReactElement => {
               Edit
             </Button>
           </Stack>
-          <Flex>
-            <Image
-              rounded={"md"}
-              alt={"feature image"}
-              src={
-                "https://images.unsplash.com/photo-1554200876-56c2f25224fa?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
-              }
-              objectFit={"cover"}
-            />
+          <Flex justifyContent={"center"}>
+            <Center>
+              <Avatar
+                size={"full"}
+                src={currentUser?.image}
+                objectFit={"none"}
+              />
+            </Center>
           </Flex>
         </SimpleGrid>
         <Stack spacing={3}>

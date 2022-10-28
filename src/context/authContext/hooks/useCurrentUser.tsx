@@ -12,6 +12,7 @@ const query = gql`
       id
       email
       username
+      image
     }
   }
 `;

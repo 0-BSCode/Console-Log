@@ -17,7 +17,7 @@ type Mutation {
   topic(name: String!): Topic!
   updateNote(content: String, description: String, noteId: String!, title: String, topicIds: [String]): Note!
   updateTopic(description: String, name: String!, topicId: String!): Topic!
-  updateUser(email: String!, username: String!): User!
+  updateUser(email: String!, image: String, username: String!): User!
 }
 
 type Note {
