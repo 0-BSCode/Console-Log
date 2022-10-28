@@ -5,7 +5,7 @@ A simple web app for journaling.
 ## Todo
 
 1. Error handling refactor on backend (global error handler)
-2. Implement profile pictures
+2. Fix buggy topics filter
 3. Implement password changing
 4. Notes refactor (better UI for inputs + topic selection)
 5. Notes icons (instead of random profile pic)
