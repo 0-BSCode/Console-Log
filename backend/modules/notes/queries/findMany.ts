@@ -1,5 +1,7 @@
+import { flatten } from "@chakra-ui/react";
 import { Context } from "backend/context";
 import { extendType, list, stringArg } from "nexus";
+import { PartialNote } from "types/note";
 import NoteObjectType from "../typeDefs";
 
 export default extendType({
@@ -15,23 +17,69 @@ export default extendType({
         try {
           const user = await ctx.currentUser();
 
-          console.log("TOPIC IDS RECEIVED");
-          console.log(topicIds);
+          let notes: PartialNote[];
 
-          const notes = await ctx.prisma.note.findMany({
-            where: {
-              userId: user.id,
-              title: {
-                contains: searchText,
-                mode: "insensitive",
+          if (topicIds?.length) {
+            const noteTopics = await ctx.prisma.noteTopics.findMany({
+              where: {
+                topicId: {
+                  in: topicIds,
+                },
+                AND: {
+                  note: {
+                    userId: user.id,
+                  },
+                },
               },
-            },
-            orderBy: [
-              {
-                updatedAt: "desc",
+              select: {
+                noteId: true,
               },
-            ],
-          });
+            });
+
+            const flattenedTopics = noteTopics.map(
+              (noteTopic) => noteTopic.noteId
+            );
+
+            const topicsCount: { id?: number } = {};
+            flattenedTopics.forEach((topicId) => {
+              if (topicsCount[topicId]) {
+                topicsCount[topicId] += 1;
+              } else {
+                topicsCount[topicId] = 1;
+              }
+            });
+
+            const finalTopics = Object.keys(topicsCount).filter(
+              (topicId) => topicsCount[topicId] === topicIds.length
+            );
+
+            notes = await ctx.prisma.note.findMany({
+              where: {
+                id: {
+                  in: finalTopics,
+                },
+              },
+            });
+          } else {
+            notes = await ctx.prisma.note.findMany({
+              where: {
+                userId: user.id,
+                title: {
+                  contains: searchText,
+                  mode: "insensitive",
+                },
+              },
+              orderBy: [
+                {
+                  updatedAt: "desc",
+                },
+              ],
+            });
+          }
+
+          console.log("SELECTED NOTES");
+          console.log(notes);
+
           return notes;
         } catch (e) {
           throw new Error(`ERROR ON NOTE RETRIEVAL: ${e}`);
