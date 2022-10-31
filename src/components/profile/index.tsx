@@ -115,7 +115,7 @@ const UserProfile = (): ReactElement => {
           <Flex justifyContent={"center"}>
             <Center>
               <Avatar
-                size={"full"}
+                size={"2xl"}
                 src={currentUser?.image}
                 objectFit={"none"}
               />
