@@ -77,9 +77,6 @@ export default extendType({
             });
           }
 
-          console.log("SELECTED NOTES");
-          console.log(notes);
-
           return notes;
         } catch (e) {
           throw new Error(`ERROR ON NOTE RETRIEVAL: ${e}`);
