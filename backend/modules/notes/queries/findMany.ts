@@ -1,5 +1,5 @@
 import { Context } from "backend/context";
-import { extendType, stringArg } from "nexus";
+import { extendType, list, stringArg } from "nexus";
 import NoteObjectType from "../typeDefs";
 
 export default extendType({
@@ -9,10 +9,14 @@ export default extendType({
       type: NoteObjectType,
       args: {
         searchText: stringArg(),
+        topicIds: list(stringArg()),
       },
-      async resolve(_parent, { searchText }, ctx: Context) {
+      async resolve(_parent, { searchText, topicIds }, ctx: Context) {
         try {
           const user = await ctx.currentUser();
+
+          console.log("TOPIC IDS RECEIVED");
+          console.log(topicIds);
 
           const notes = await ctx.prisma.note.findMany({
             where: {

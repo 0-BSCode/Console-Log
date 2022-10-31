@@ -36,6 +36,7 @@ const NotesTable = (): ReactElement => {
 
   const variables: QueryVariables = {
     searchText,
+    topicIds: selectedTopicIds,
   };
 
   const { data, loading, error, fetchMore } = useQuery<
@@ -50,9 +51,6 @@ const NotesTable = (): ReactElement => {
   });
 
   const notes: PartialNote[] = data?.notes || [];
-
-  console.log("SELECTED TOPIC IDS");
-  console.log(selectedTopicIds);
 
   return (
     <>
