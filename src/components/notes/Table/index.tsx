@@ -32,6 +32,7 @@ const NotesTable = (): ReactElement => {
   const { currUser } = useAuthContext();
   const [searchText, setSearchText] = useState<string>("");
   const [isTopicsModalOpen, setIsTopicsModalOpen] = useState<boolean>(false);
+  const [selectedTopicIds, setSelectedTopicIds] = useState<string[]>([]);
 
   const variables: QueryVariables = {
     searchText,
@@ -50,12 +51,25 @@ const NotesTable = (): ReactElement => {
 
   const notes: PartialNote[] = data?.notes || [];
 
+  console.log("SELECTED TOPIC IDS");
+  console.log(selectedTopicIds);
+
   return (
     <>
       <TopicsFilterModal
+        topicIds={selectedTopicIds}
         isOpen={isTopicsModalOpen}
         onClose={() => {
           setIsTopicsModalOpen(false);
+        }}
+        onChange={(topicId: string) => {
+          if (selectedTopicIds.includes(topicId)) {
+            setSelectedTopicIds(
+              selectedTopicIds.filter((id) => id !== topicId)
+            );
+          } else {
+            setSelectedTopicIds([...selectedTopicIds, topicId]);
+          }
         }}
       />
       <Flex

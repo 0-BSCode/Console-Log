@@ -1,5 +1,4 @@
-import React, { ReactElement, useState } from "react";
-import { useRouter } from "next/router";
+import React, { ReactElement } from "react";
 import {
   Button,
   Modal,
@@ -13,6 +12,10 @@ import {
   InputGroup,
   Input,
   useToast,
+  VStack,
+  Box,
+  chakra,
+  HStack,
 } from "@chakra-ui/react";
 import query, { QueryResults } from "./query";
 import { useQuery } from "@apollo/client";
@@ -21,24 +24,71 @@ import useCustomToast from "src/components/_hooks/useCustomToast";
 export interface Props {
   isOpen: boolean;
   onClose: () => void;
+  onChange: (topicId: string) => void;
+  topicIds: string[];
 }
 
-const TopicsFilterModal = ({ isOpen, onClose }: Props): ReactElement => {
+const TopicsFilterModal = ({
+  isOpen,
+  onClose,
+  onChange,
+  topicIds,
+}: Props): ReactElement => {
   const toast = useCustomToast();
 
   const { data, loading } = useQuery<QueryResults>(query, {
     fetchPolicy: "network-only",
   });
 
-  console.log("TOPICS");
-  console.log(data);
+  const topics = data?.topics || [];
+  const selectedTopics =
+    topics?.filter((topic) => topicIds.includes(topic.id)) || [];
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Delete Note</ModalHeader>
-        <ModalBody>Are you sure you want to delete this?</ModalBody>
+        <ModalHeader>Topics Filter</ModalHeader>
+        <ModalBody>
+          <VStack spacing={2}>
+            <VStack alignItems={"flex-start"} w={"full"}>
+              <chakra.p fontWeight={"semibold"}>Selected Topics</chakra.p>
+              <HStack spacing={2} wrap={"wrap"} w={"full"}>
+                {selectedTopics.length ? (
+                  selectedTopics.map((topic) => (
+                    <Button key={topic.id} disabled colorScheme={"blue"}>
+                      {topic.name}
+                    </Button>
+                  ))
+                ) : (
+                  <chakra.p w={"full"} textAlign={"center"} color={"gray"}>
+                    No topics selected yet
+                  </chakra.p>
+                )}
+              </HStack>
+            </VStack>
+            <VStack alignItems={"flex-start"} w={"full"}>
+              <chakra.p fontWeight={"semibold"}>Your Topics</chakra.p>
+              <HStack spacing={2} wrap={"wrap"}>
+                {topics.length ? (
+                  topics.map((topic) => (
+                    <Button
+                      key={topic.id}
+                      onClick={() => onChange(topic.id)}
+                      colorScheme={`${
+                        topicIds.includes(topic.id) ? "purple" : "gray"
+                      }`}
+                    >
+                      {topic.name}
+                    </Button>
+                  ))
+                ) : (
+                  <chakra.p>{"You don't have any topics yet"}</chakra.p>
+                )}
+              </HStack>
+            </VStack>
+          </VStack>
+        </ModalBody>
 
         <ModalFooter>
           <Button
