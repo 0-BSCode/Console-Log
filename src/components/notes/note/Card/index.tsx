@@ -13,6 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { PartialTopic } from "types/topic";
+import shortenString from "src/_utils/shortenString";
 
 interface NotesCardProps {
   id?: string;
@@ -27,7 +28,7 @@ const NotesCard = (props: NotesCardProps): ReactElement => {
   const { id, title, description, content, topics } = props;
   const router = useRouter();
   const defaultAvatar =
-    "https://images.unsplash.com/photo-1606513542745-97629752a13b?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=334&q=80";
+    "https://images.unsplash.com/photo-1471107340929-a87cd0f5b5f3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=773&q=80";
 
   return (
     <Flex
@@ -84,19 +85,17 @@ const NotesCard = (props: NotesCardProps): ReactElement => {
         justifyContent={"flex-start"}
       >
         <chakra.p fontWeight={"bold"} fontSize={14} pb={"4"}>
-          {title}
+          {shortenString(title, 25)}
           {description && (
             <chakra.span fontWeight={"medium"} color={"gray.500"}>
               {" "}
-              - {description}
+              - {shortenString(description, 50)}
             </chakra.span>
           )}
         </chakra.p>
-        {content && (
-          <chakra.p fontWeight={"medium"} fontSize={"15px"}>
-            {content}
-          </chakra.p>
-        )}
+        <chakra.p fontWeight={"medium"} fontSize={"15px"}>
+          {shortenString(content, 60)}
+        </chakra.p>
         <HStack spacing={2} pt={4}>
           {topics?.map((topic) => (
             <chakra.p
