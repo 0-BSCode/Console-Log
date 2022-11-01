@@ -91,10 +91,19 @@ const CreateNote = (): ReactElement => {
           setIsTopicModalOpen(false);
         }}
         selectedTopics={createNoteParams.topicIds}
-        onChange={(newValues: string[]) => {
+        onChange={(topicId: string) => {
+          let newTopicIds: string[] = [];
+          if (createNoteParams.topicIds.includes(topicId)) {
+            newTopicIds = createNoteParams.topicIds.filter(
+              (id) => id !== topicId
+            );
+          } else {
+            newTopicIds = [...createNoteParams.topicIds, topicId];
+          }
+
           setCreateNoteParams({
             ...createNoteParams,
-            topicIds: newValues,
+            topicIds: newTopicIds,
           });
         }}
       />

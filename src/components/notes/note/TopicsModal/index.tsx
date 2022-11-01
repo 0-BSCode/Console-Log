@@ -26,7 +26,7 @@ export interface CreateNoteModalProps {
   isOpen: boolean;
   onClose: () => void;
   selectedTopics: string[];
-  onChange: (newValues: string[]) => void;
+  onChange: (topicId: string) => void;
 }
 
 const TopicsModal = ({
@@ -46,7 +46,7 @@ const TopicsModal = ({
     MutationResults,
     MutationVariables
   >(mutation, {
-    onCompleted: (data) => {
+    onCompleted: () => {
       toast.addToast({
         description: "Successfully created topic",
         status: "success",
@@ -97,23 +97,25 @@ const TopicsModal = ({
             <br />
 
             <Text>Topics</Text>
-            <CheckboxGroup
-              colorScheme="blue"
-              defaultValue={selectedTopics}
-              onChange={onChange}
+            <Stack
+              spacing={5}
+              direction={["column", "row"]}
+              wrap={"wrap"}
+              alignItems={"center"}
             >
-              <Stack
-                spacing={[5, 5]}
-                direction={["column", "row"]}
-                wrap={"wrap"}
-              >
-                {topics?.map((topic) => (
-                  <Checkbox key={topic.id} value={topic.id}>
-                    {topic.name}
-                  </Checkbox>
-                ))}
-              </Stack>
-            </CheckboxGroup>
+              {topics?.map((topic) => (
+                <Button
+                  my={4}
+                  key={topic.id}
+                  onClick={() => onChange(topic.id)}
+                  colorScheme={
+                    selectedTopics.includes(topic.id) ? "purple" : "gray"
+                  }
+                >
+                  {topic.name}
+                </Button>
+              ))}
+            </Stack>
           </FormControl>
         </ModalBody>
 

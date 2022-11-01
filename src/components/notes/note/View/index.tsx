@@ -29,6 +29,7 @@ import {
   MenuDivider,
   MenuItem,
   useToast,
+  chakra,
 } from "@chakra-ui/react";
 import query, { QueryResults, QueryVariables } from "./query";
 import { useQuery, useMutation } from "@apollo/client";
@@ -108,6 +109,8 @@ const NoteView = ({ noteId }: { noteId: string }): ReactElement => {
     },
   });
 
+  const userTopics = data?.note?.topics || [];
+
   const [updateNoteMutation, updateNoteMutationState] = useMutation<
     UpdateNoteMutationResults,
     UpdateNoteMutationVariables
@@ -132,10 +135,19 @@ const NoteView = ({ noteId }: { noteId: string }): ReactElement => {
           setIsTopicModalOpen(false);
         }}
         selectedTopics={editNoteParams.topicIds}
-        onChange={(newValues: string[]) => {
+        onChange={(topicId: string) => {
+          let newTopicIds: string[] = [];
+          if (editNoteParams.topicIds.includes(topicId)) {
+            newTopicIds = editNoteParams.topicIds.filter(
+              (id) => id !== topicId
+            );
+          } else {
+            newTopicIds = [...editNoteParams.topicIds, topicId];
+          }
+
           setEditNoteParams({
             ...editNoteParams,
-            topicIds: newValues,
+            topicIds: newTopicIds,
           });
         }}
       />
@@ -204,14 +216,35 @@ const NoteView = ({ noteId }: { noteId: string }): ReactElement => {
                       </InputGroup>
 
                       <br />
-                      <Button
-                        disabled={!isEditing}
-                        onClick={() => {
-                          setIsTopicModalOpen(true);
-                        }}
-                      >
-                        Topics
-                      </Button>
+                      {isEditing ? (
+                        <Button
+                          onClick={() => {
+                            setIsTopicModalOpen(true);
+                          }}
+                        >
+                          Topics
+                        </Button>
+                      ) : (
+                        <>
+                          <chakra.p fontWeight={"semibold"}>Topics</chakra.p>
+                          <HStack spacing={2} pt={4}>
+                            {userTopics?.map((topic) => (
+                              <chakra.p
+                                fontSize={"11px"}
+                                key={topic.id}
+                                color={"white"}
+                                bg={"purple.400"}
+                                px={2}
+                                py={1}
+                                borderRadius={"lg"}
+                                fontWeight={"medium"}
+                              >
+                                {topic.name}
+                              </chakra.p>
+                            ))}
+                          </HStack>
+                        </>
+                      )}
                     </FormControl>
 
                     <FormControl>

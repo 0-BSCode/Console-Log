@@ -50,15 +50,22 @@ const TopicsFilterModal = ({
       <ModalContent>
         <ModalHeader>Topics Filter</ModalHeader>
         <ModalBody>
-          <VStack spacing={2}>
+          <VStack spacing={4}>
             <VStack alignItems={"flex-start"} w={"full"}>
               <chakra.p fontWeight={"semibold"}>Selected Topics</chakra.p>
               <HStack spacing={2} wrap={"wrap"} w={"full"}>
                 {selectedTopics.length ? (
                   selectedTopics.map((topic) => (
-                    <Button key={topic.id} disabled colorScheme={"blue"}>
+                    <chakra.p
+                      key={topic.id}
+                      color={"white"}
+                      bgColor={"purple.400"}
+                      py={2}
+                      px={4}
+                      borderRadius={"lg"}
+                    >
                       {topic.name}
-                    </Button>
+                    </chakra.p>
                   ))
                 ) : (
                   <chakra.p w={"full"} textAlign={"center"} color={"gray"}>
@@ -75,9 +82,9 @@ const TopicsFilterModal = ({
                     <Button
                       key={topic.id}
                       onClick={() => onChange(topic.id)}
-                      colorScheme={`${
+                      colorScheme={
                         topicIds.includes(topic.id) ? "purple" : "gray"
-                      }`}
+                      }
                     >
                       {topic.name}
                     </Button>
