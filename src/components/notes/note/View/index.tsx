@@ -40,6 +40,7 @@ import UpdateNoteMutation, {
 import TopicsModal from "../TopicsModal";
 import DeleteNoteModal from "./DeleteModal";
 import useCustomToast from "src/components/_hooks/useCustomToast";
+import TextEditor from "src/components/_common/textEditor";
 
 const confetti = {
   light: {
@@ -269,19 +270,15 @@ const NoteView = ({ noteId }: { noteId: string }): ReactElement => {
                     <FormControl>
                       <FormLabel>Content</FormLabel>
 
-                      <Textarea
-                        disabled={!isEditing}
-                        name="message"
-                        placeholder="What would you like to write about?"
-                        rows={6}
-                        resize="none"
+                      <TextEditor
                         value={editNoteParams.content}
-                        onChange={(e) => {
+                        onChange={(newValue) => {
                           setEditNoteParams({
                             ...editNoteParams,
-                            content: e.target.value,
+                            content: newValue,
                           });
                         }}
+                        disabled={isEditing}
                       />
                     </FormControl>
 

@@ -34,6 +34,7 @@ import { useRouter } from "next/router";
 import { AddIcon } from "@chakra-ui/icons";
 import query, { QueryResults } from "./query";
 import TopicsModal from "../TopicsModal";
+import TextEditor from "src/components/_common/textEditor";
 
 const confetti = {
   light: {
@@ -194,18 +195,15 @@ const CreateNote = (): ReactElement => {
                     <FormControl>
                       <FormLabel>Content</FormLabel>
 
-                      <Textarea
-                        name="message"
-                        placeholder="What would you like to write about?"
-                        rows={6}
-                        resize="none"
+                      <TextEditor
                         value={createNoteParams.content}
-                        onChange={(e) => {
+                        onChange={(newValue) => {
                           setCreateNoteParams({
                             ...createNoteParams,
-                            content: e.target.value,
+                            content: newValue,
                           });
                         }}
+                        disabled={false}
                       />
                     </FormControl>
 
