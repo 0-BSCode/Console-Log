@@ -10,6 +10,7 @@ import {
   MenuItem,
   Image,
 } from "@chakra-ui/react";
+import Highlight from "@tiptap/extension-highlight";
 import StarterKit from "@tiptap/starter-kit";
 import { FiBold, FiDownload, FiItalic, FiSlash } from "react-icons/fi";
 import ActionButton from "./actionButton";
@@ -22,7 +23,7 @@ interface Props {
 
 const TextEditor = ({ value, onChange, disabled }: Props) => {
   const editor = useEditor({
-    extensions: [StarterKit],
+    extensions: [StarterKit, Highlight.configure({ multicolor: true })],
     content: value || "<p>Write away!</p>",
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
@@ -59,17 +60,24 @@ const TextEditor = ({ value, onChange, disabled }: Props) => {
               icon={<FiSlash />}
               onClick={() => editor.chain().focus().toggleStrike().run()}
             />
-            <Menu>
+            {/* <Menu>
               <MenuButton as={Button} rightIcon={<FiDownload />}>
                 Your Cats
               </MenuButton>
               <MenuList>
                 <MenuItem minH="48px" w={"fit-content"}>
                   <ActionButton
-                    isActive={editor.isActive("strike")}
-                    label={"Strikethrough text"}
+                    isActive={editor.isActive("highlight")}
+                    label={"Highlight text"}
                     icon={<FiSlash />}
-                    onClick={() => editor.chain().focus().toggleStrike().run()}
+                    onClick={() =>
+                      editor
+                        .chain()
+                        .focus()
+                        .toggleHighlight({ color: "#ffc078" })
+                        .run()
+                    }
+                    bgColor={"ffc078"}
                   />
                 </MenuItem>
                 <MenuItem minH="40px">
@@ -81,7 +89,7 @@ const TextEditor = ({ value, onChange, disabled }: Props) => {
                   />
                 </MenuItem>
               </MenuList>
-            </Menu>
+            </Menu> */}
           </HStack>
         </BubbleMenu>
       )}

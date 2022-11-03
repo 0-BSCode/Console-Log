@@ -6,13 +6,14 @@ interface Props {
   label: string;
   icon: ReactElement;
   onClick: () => boolean;
+  bgColor?: string;
 }
 
-const ActionButton = ({ isActive, label, icon, onClick }: Props) => {
+const ActionButton = ({ isActive, label, icon, onClick, bgColor }: Props) => {
   return (
     <IconButton
-      colorScheme={"purple"}
-      bgColor={isActive ? "purple.700" : "purple.400"}
+      colorScheme={bgColor ? "" : "purple"}
+      bgColor={bgColor || isActive ? "purple.700" : "purple.400"}
       aria-label={label}
       icon={icon}
       onClick={onClick}
