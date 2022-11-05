@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import NoteView from "src/components/notes/note/View";
-import { Spinner } from "@chakra-ui/react";
 import PageHeader from "src/components/_common/pageHeader";
+import CircularProgress from "src/components/_common/circularProgress";
 
 const ViewNotePage: NextPage = () => {
   const router = useRouter();
@@ -13,7 +13,7 @@ const ViewNotePage: NextPage = () => {
     if (router.isReady && !noteId.length) router.push("/notes");
   }, [noteId, router]);
 
-  if (!router.isReady) return <Spinner />;
+  if (!router.isReady) return <CircularProgress />;
 
   return (
     <>

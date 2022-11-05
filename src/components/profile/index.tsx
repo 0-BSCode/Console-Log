@@ -27,6 +27,7 @@ import { useQuery } from "@apollo/client";
 import query, { QueryResults } from "./query";
 import UpdateTopicModal from "./UpdateTopicModal";
 import UpdateProfileModal from "./UpdateProfileModal";
+import CircularProgress from "../_common/circularProgress";
 
 const UserProfile = (): ReactElement => {
   const [selectedTopicId, setSelectedTopicId] = useState<string>("");
@@ -41,7 +42,7 @@ const UserProfile = (): ReactElement => {
   const topics = data?.topics || [];
   const topicCount = data?.topic_count || 0;
 
-  if (loading) return <Spinner />;
+  if (loading) return <CircularProgress />;
 
   return (
     <>

@@ -40,6 +40,7 @@ import TopicsModal from "../TopicsModal";
 import DeleteNoteModal from "./DeleteModal";
 import useCustomToast from "src/components/_hooks/useCustomToast";
 import TextEditor from "src/components/_common/textEditor";
+import CircularProgress from "src/components/_common/circularProgress";
 
 const confetti = {
   light: {
@@ -125,7 +126,7 @@ const NoteView = ({ noteId }: { noteId: string }): ReactElement => {
     },
   });
 
-  if (loading || updateNoteMutationState.loading) return <Spinner />;
+  if (loading || updateNoteMutationState.loading) return <CircularProgress />;
 
   return (
     <>
