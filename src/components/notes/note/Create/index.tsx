@@ -116,7 +116,7 @@ const CreateNote = (): ReactElement => {
         }}
       />
       <Flex justify={"center"}>
-        <Box w={"lg"} py={{ base: 5, lg: 16 }}>
+        <Box w={"2xl"} py={{ base: 5, lg: 16 }}>
           <HStack>
             <FormControl isRequired>
               <InputGroup>
