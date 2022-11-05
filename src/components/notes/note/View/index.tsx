@@ -1,6 +1,5 @@
 import React, { ReactElement, useState } from "react";
-import { BsGithub, BsLinkedin, BsPerson, BsTwitter } from "react-icons/bs";
-import { MdEmail, MdOutlineEmail } from "react-icons/md";
+import { FiCheck, FiEdit, FiPlus, FiTrash, FiX } from "react-icons/fi";
 import {
   Box,
   Button,
@@ -110,7 +109,7 @@ const NoteView = ({ noteId }: { noteId: string }): ReactElement => {
     },
   });
 
-  const userTopics = data?.note?.topics || [];
+  const topics = data?.topics || [];
 
   const [updateNoteMutation, updateNoteMutationState] = useMutation<
     UpdateNoteMutationResults,
@@ -159,196 +158,165 @@ const NoteView = ({ noteId }: { noteId: string }): ReactElement => {
           setIsDeleteModalOpen(false);
         }}
       />
-      <Flex
-        bg={colorModeValues("gray.100", "gray.900")}
-        align="center"
-        justify="center"
-        css={{
-          backgroundImage: colorModeValues(CONFETTI_LIGHT, CONFETTI_DARK),
-          backgroundAttachment: "fixed",
-        }}
-        id="contact"
-      >
-        <Box
-          borderRadius={"lg"}
-          m={{ base: 5, md: 16, lg: 10 }}
-          p={{ base: 5, lg: 16 }}
-        >
-          <Box>
-            <VStack spacing={{ base: 4, md: 8, lg: 20 }}>
-              <Heading
-                fontSize={{
-                  base: "4xl",
-                  md: "5xl",
+      <Flex justify={"center"} h={"100vh"} minH={"fit-content"}>
+        <Box w={"lg"} py={{ base: 5, lg: 16 }}>
+          <HStack>
+            <FormControl isRequired>
+              <InputGroup>
+                <Input
+                  px={0}
+                  border={"none"}
+                  focusBorderColor={"none"}
+                  borderBottom={"2px"}
+                  borderRadius={"none"}
+                  fontWeight={"bold"}
+                  fontSize={"3xl"}
+                  readOnly={!isEditing}
+                  type={"text"}
+                  placeholder={"Give your thought a name"}
+                  value={editNoteParams.title}
+                  onChange={(e) => {
+                    setEditNoteParams({
+                      ...editNoteParams,
+                      title: e.target.value,
+                    });
+                  }}
+                />
+              </InputGroup>
+            </FormControl>
+            <HStack display={"flex"}>
+              {isEditing ? (
+                <>
+                  <IconButton
+                    aria-label={"Cancel"}
+                    icon={<FiX />}
+                    variant={"outline"}
+                    colorScheme="gray"
+                    color="gray"
+                    flexGrow={"1"}
+                    onClick={() => {
+                      setIsEditing(false);
+                      setEditNoteParams(defaultNoteParams);
+                    }}
+                  />
+                  <IconButton
+                    aria-label={"Submit"}
+                    icon={<FiCheck />}
+                    colorScheme="blue"
+                    bg="blue.400"
+                    color="white"
+                    _hover={{
+                      bg: "blue.500",
+                    }}
+                    onClick={() => {
+                      updateNoteMutation({
+                        variables: editNoteParams,
+                      });
+                    }}
+                    flexGrow={"1"}
+                  />
+                </>
+              ) : (
+                <>
+                  <IconButton
+                    aria-label={"Delete note"}
+                    icon={<FiTrash />}
+                    variant={"outline"}
+                    colorScheme="red"
+                    color="red"
+                    flexGrow={"1"}
+                    onClick={() => {
+                      setIsDeleteModalOpen(true);
+                    }}
+                  />
+
+                  <IconButton
+                    aria-label={"Edit note"}
+                    icon={<FiEdit />}
+                    colorScheme="blue"
+                    bg="blue.400"
+                    color="white"
+                    _hover={{
+                      bg: "blue.500",
+                    }}
+                    onClick={() => {
+                      setIsEditing(true);
+                    }}
+                    flexGrow={"1"}
+                  />
+                </>
+              )}
+            </HStack>
+          </HStack>
+          <HStack spacing={2} pt={3}>
+            {isEditing && (
+              <IconButton
+                bgColor={"inherit"}
+                borderColor={"purple.400"}
+                borderStyle={"dashed"}
+                borderWidth={"2px"}
+                h={"fit-content"}
+                py={1}
+                borderRadius={"lg"}
+                aria-label={"Add topic"}
+                icon={<FiPlus size={"0.8em"} color={"purple.400"} />}
+                onClick={() => {
+                  setIsTopicModalOpen(true);
                 }}
-              >
-                {isEditing ? "Editing Note" : "Viewing Note"}
-              </Heading>
-
-              <Stack
-                spacing={{ base: 4, md: 8, lg: 20 }}
-                direction={{ base: "column", md: "row" }}
-              >
-                <Box
-                  width={"lg"}
-                  bg={colorModeValues("white", "gray.700")}
-                  borderRadius="lg"
-                  p={8}
-                  color={colorModeValues("gray.700", "whiteAlpha.900")}
-                  shadow="base"
-                >
-                  <VStack spacing={5}>
-                    <FormControl isRequired>
-                      <FormLabel>Title</FormLabel>
-
-                      <InputGroup>
-                        <Input
-                          disabled={!isEditing}
-                          type={"text"}
-                          placeholder={"Give your thought a name"}
-                          value={editNoteParams.title}
-                          onChange={(e) => {
-                            setEditNoteParams({
-                              ...editNoteParams,
-                              title: e.target.value,
-                            });
-                          }}
-                        />
-                      </InputGroup>
-
-                      <br />
-                      {isEditing ? (
-                        <Button
-                          onClick={() => {
-                            setIsTopicModalOpen(true);
-                          }}
-                        >
-                          Topics
-                        </Button>
-                      ) : (
-                        <>
-                          <chakra.p fontWeight={"semibold"}>Topics</chakra.p>
-                          <HStack spacing={2} pt={4}>
-                            {userTopics?.map((topic) => (
-                              <chakra.p
-                                fontSize={"11px"}
-                                key={topic.id}
-                                color={"white"}
-                                bg={"purple.400"}
-                                px={2}
-                                py={1}
-                                borderRadius={"lg"}
-                                fontWeight={"medium"}
-                              >
-                                {topic.name}
-                              </chakra.p>
-                            ))}
-                          </HStack>
-                        </>
-                      )}
-                    </FormControl>
-
-                    <FormControl>
-                      <FormLabel>Description</FormLabel>
-
-                      <InputGroup>
-                        <Input
-                          disabled={!isEditing}
-                          type={"text"}
-                          placeholder={"Give your thought a short description"}
-                          value={editNoteParams.description}
-                          onChange={(e) => {
-                            setEditNoteParams({
-                              ...editNoteParams,
-                              description: e.target.value,
-                            });
-                          }}
-                        />
-                      </InputGroup>
-                    </FormControl>
-
-                    <FormControl>
-                      <FormLabel>Content</FormLabel>
-
-                      <TextEditor
-                        value={editNoteParams.content}
-                        onChange={(newValue) => {
-                          setEditNoteParams({
-                            ...editNoteParams,
-                            content: newValue,
-                          });
-                        }}
-                        disabled={isEditing}
-                      />
-                    </FormControl>
-
-                    <HStack display={"flex"} width={"100%"}>
-                      {isEditing ? (
-                        <>
-                          <Button
-                            variant={"outline"}
-                            colorScheme="gray"
-                            color="gray"
-                            flexGrow={"1"}
-                            onClick={() => {
-                              setIsEditing(false);
-                              setEditNoteParams(defaultNoteParams);
-                            }}
-                          >
-                            Cancel
-                          </Button>
-                          <Button
-                            colorScheme="blue"
-                            bg="blue.400"
-                            color="white"
-                            _hover={{
-                              bg: "blue.500",
-                            }}
-                            onClick={() => {
-                              updateNoteMutation({
-                                variables: editNoteParams,
-                              });
-                            }}
-                            flexGrow={"1"}
-                          >
-                            Update
-                          </Button>
-                        </>
-                      ) : (
-                        <>
-                          <Button
-                            variant={"outline"}
-                            colorScheme="red"
-                            color="red"
-                            flexGrow={"1"}
-                            onClick={() => {
-                              setIsDeleteModalOpen(true);
-                            }}
-                          >
-                            Delete
-                          </Button>
-                          <Button
-                            colorScheme="blue"
-                            bg="blue.400"
-                            color="white"
-                            _hover={{
-                              bg: "blue.500",
-                            }}
-                            onClick={() => {
-                              setIsEditing(true);
-                            }}
-                            flexGrow={"1"}
-                          >
-                            Edit
-                          </Button>
-                        </>
-                      )}
-                    </HStack>
-                  </VStack>
-                </Box>
-              </Stack>
-            </VStack>
-          </Box>
+              />
+            )}
+            {topics.map((topic) => (
+              <>
+                {editNoteParams.topicIds.includes(topic.id) && (
+                  <chakra.p
+                    fontSize={"11px"}
+                    key={topic.id}
+                    color={"white"}
+                    bg={"purple.400"}
+                    px={2}
+                    py={1}
+                    borderRadius={"lg"}
+                    fontWeight={"medium"}
+                  >
+                    {topic.name}
+                  </chakra.p>
+                )}
+              </>
+            ))}
+          </HStack>
+          <FormControl>
+            <InputGroup>
+              <Input
+                px={0}
+                border={"none"}
+                focusBorderColor={"none"}
+                borderRadius={"none"}
+                fontWeight={"normal"}
+                fontSize={"md"}
+                color={"gray.400"}
+                readOnly={!isEditing}
+                type={"text"}
+                placeholder={"Give your thought a short description"}
+                value={editNoteParams.description}
+                onChange={(e) => {
+                  setEditNoteParams({
+                    ...editNoteParams,
+                    description: e.target.value,
+                  });
+                }}
+              />
+            </InputGroup>
+          </FormControl>
+          <TextEditor
+            value={editNoteParams.content}
+            onChange={(newValue) => {
+              setEditNoteParams({
+                ...editNoteParams,
+                content: newValue,
+              });
+            }}
+            disabled={isEditing}
+          />
         </Box>
       </Flex>
     </>

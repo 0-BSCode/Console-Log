@@ -8,6 +8,7 @@ TitTap Editor Design
   }
   .ProseMirror:focus {
     border: none;
+    outline: none;
   }
   
   .ProseMirror > * + * {

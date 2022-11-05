@@ -42,7 +42,7 @@ const TopicsFilterModal = ({
 
   const topics = data?.topics || [];
   const selectedTopics =
-    topics?.filter((topic) => topicIds.includes(topic.id)) || [];
+    topics.filter((topic) => topicIds.includes(topic.id)) || [];
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>

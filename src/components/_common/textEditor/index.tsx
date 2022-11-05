@@ -14,21 +14,19 @@ import Highlight from "@tiptap/extension-highlight";
 import StarterKit from "@tiptap/starter-kit";
 import { FiBold, FiDownload, FiItalic, FiSlash } from "react-icons/fi";
 import ActionButton from "./actionButton";
+import { PartialNote } from "types/note";
 
 interface Props {
   value: string;
   onChange: (newValue: string) => void;
   disabled: boolean;
+  placeholder: string;
 }
 
-const TextEditor = ({ value, onChange, disabled }: Props) => {
+const TextEditor = ({ value, onChange, disabled, placeholder }: Props) => {
   const editor = useEditor({
     extensions: [StarterKit, Highlight.configure({ multicolor: true })],
-    content: value || "<p>Write away!</p>",
-    onUpdate: ({ editor }) => {
-      const html = editor.getHTML();
-      onChange(html);
-    },
+    content: value || `<p>${placeholder}</p>`,
   });
 
   useEffect(() => {
@@ -36,6 +34,13 @@ const TextEditor = ({ value, onChange, disabled }: Props) => {
       editor.setEditable(disabled);
     }
   }, [disabled, editor]);
+
+  useEffect(() => {
+    if (editor) {
+      editor.off("update");
+      editor.on("update", ({ editor }) => onChange(editor.getHTML()));
+    }
+  }, [editor, onChange]);
 
   return (
     <VStack w={"full"}>
@@ -99,6 +104,11 @@ const TextEditor = ({ value, onChange, disabled }: Props) => {
       />
     </VStack>
   );
+};
+
+TextEditor.defaultProps = {
+  disabled: true,
+  placeholder: "Place your thoughts here!",
 };
 
 export default TextEditor;

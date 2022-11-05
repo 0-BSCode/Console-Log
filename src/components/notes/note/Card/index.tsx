@@ -86,15 +86,11 @@ const NotesCard = (props: NotesCardProps): ReactElement => {
       >
         <chakra.p fontWeight={"bold"} fontSize={14} pb={"4"}>
           {shortenString(title, 25)}
-          {description && (
-            <chakra.span fontWeight={"medium"} color={"gray.500"}>
-              {" "}
-              - {shortenString(description, 50)}
-            </chakra.span>
-          )}
         </chakra.p>
-        <chakra.p fontWeight={"medium"} fontSize={"15px"}>
-          {shortenString(content, 60)}
+        <chakra.p fontWeight={"medium"} color={"gray.500"} fontSize={"sm"}>
+          {description
+            ? shortenString(description, 60)
+            : "No description provided"}
         </chakra.p>
         <HStack spacing={2} pt={4}>
           {topics?.map((topic) => (

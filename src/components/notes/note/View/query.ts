@@ -1,6 +1,7 @@
 import { gql } from "@apollo/client";
 import { Topic } from "@prisma/client";
 import { PartialNote } from "types/note";
+import { PartialTopic } from "types/topic";
 
 export interface QueryVariables {
   noteId: string;
@@ -8,10 +9,11 @@ export interface QueryVariables {
 
 export interface QueryResults {
   note: PartialNote & { topics: Partial<Topic[]> };
+  topics: PartialTopic[];
 }
 
 export default gql`
-  query FetchNoteQuery($noteId: String!) {
+  query FetchNoteAndTopicsQuery($noteId: String!) {
     note(noteId: $noteId) {
       id
       title
@@ -21,6 +23,12 @@ export default gql`
         id
         name
       }
+    }
+
+    topics {
+      id
+      name
+      description
     }
   }
 `;
