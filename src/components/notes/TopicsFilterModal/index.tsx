@@ -74,6 +74,7 @@ const TopicsFilterModal = ({
                 {topics.length ? (
                   topics.map((topic) => (
                     <Button
+                      my={3}
                       key={topic.id}
                       onClick={() => onChange(topic.id)}
                       colorScheme={
@@ -92,12 +93,7 @@ const TopicsFilterModal = ({
         </ModalBody>
 
         <ModalFooter>
-          <Button
-            colorScheme="purple"
-            mr={3}
-            // disabled={deleteNoteMutationState.loading}
-            onClick={onClose}
-          >
+          <Button colorScheme="purple" mr={3} onClick={onClose}>
             Close
           </Button>
         </ModalFooter>
