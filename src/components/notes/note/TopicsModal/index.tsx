@@ -11,11 +11,8 @@ import {
   FormLabel,
   InputGroup,
   Input,
-  CheckboxGroup,
-  Checkbox,
   Stack,
   Text,
-  useToast,
 } from "@chakra-ui/react";
 import { useMutation, useQuery } from "@apollo/client";
 import mutation, { MutationVariables, MutationResults } from "./mutation";

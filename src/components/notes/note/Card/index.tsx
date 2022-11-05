@@ -1,14 +1,9 @@
 import React, { ReactElement } from "react";
 import {
   Avatar,
-  Box,
   chakra,
-  Container,
   Flex,
-  Icon,
-  Text,
   useColorModeValue,
-  Button,
   HStack,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";

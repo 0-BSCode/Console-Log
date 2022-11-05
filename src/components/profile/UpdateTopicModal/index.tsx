@@ -1,5 +1,4 @@
 import React, { ReactElement, useState, useEffect } from "react";
-import { useRouter } from "next/router";
 import {
   Button,
   Modal,
@@ -15,8 +14,6 @@ import {
   VStack,
   chakra,
   HStack,
-  Spinner,
-  useToast,
 } from "@chakra-ui/react";
 import { useMutation } from "@apollo/client";
 import { PartialTopic } from "types/topic";
@@ -28,7 +25,6 @@ import EditTopicMutation, {
   EditTopicMutationResults,
   EditTopicMutationVariables,
 } from "./mutations/updateTopicMutation";
-import { useAuthContext } from "src/context/authContext";
 import useCustomToast from "src/components/_hooks/useCustomToast";
 
 interface UpdateTopicModalProps {

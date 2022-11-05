@@ -1,44 +1,22 @@
 import {
   Box,
-  Button,
   Flex,
   FormControl,
-  FormLabel,
-  Heading,
   IconButton,
   Input,
   InputGroup,
-  InputLeftElement,
-  Link,
-  Stack,
-  Textarea,
-  Tooltip,
-  useClipboard,
-  useColorModeValue,
-  VStack,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuOptionGroup,
-  MenuItemOption,
-  MenuDivider,
-  MenuItem,
   HStack,
   chakra,
 } from "@chakra-ui/react";
 import useCustomToast from "src/components/_hooks/useCustomToast";
-import React, { ReactElement, useEffect, useState } from "react";
-import { BsGithub, BsLinkedin, BsPerson, BsTwitter } from "react-icons/bs";
-import { MdEmail, MdOutlineEmail } from "react-icons/md";
+import React, { ReactElement, useState } from "react";
 import mutation, { MutationResults, MutationVariables } from "./mutation";
 import { useMutation, useQuery } from "@apollo/client";
-import { PartialNote } from "types/note";
 import { useRouter } from "next/router";
-import { AddIcon } from "@chakra-ui/icons";
 import query, { QueryResults } from "./query";
 import TopicsModal from "../TopicsModal";
 import TextEditor from "src/components/_common/textEditor";
-import { FiFilePlus, FiPlus, FiPlusCircle } from "react-icons/fi";
+import { FiPlus, FiPlusCircle } from "react-icons/fi";
 
 const confetti = {
   light: {

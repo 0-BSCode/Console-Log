@@ -10,16 +10,13 @@ import {
   MenuList,
   MenuItem,
   MenuDivider,
-  useDisclosure,
   useColorModeValue,
   Stack,
   useColorMode,
   Center,
-  chakra,
 } from "@chakra-ui/react";
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 import { useAuthContext } from "src/context/authContext";
-import { PartialUser } from "types/user";
 import { useRouter } from "next/router";
 
 const NavLink = ({ children }: { children: ReactNode }): ReactElement => (

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import NoteView from "src/components/notes/note/View";

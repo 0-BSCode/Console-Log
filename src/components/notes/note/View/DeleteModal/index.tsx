@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement } from "react";
 import { useRouter } from "next/router";
 import {
   Button,
@@ -8,11 +8,6 @@ import {
   ModalHeader,
   ModalFooter,
   ModalBody,
-  FormControl,
-  FormLabel,
-  InputGroup,
-  Input,
-  useToast,
 } from "@chakra-ui/react";
 import { useMutation } from "@apollo/client";
 import mutation, { MutationVariables, MutationResults } from "./mutation";

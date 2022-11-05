@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { FiFile } from "react-icons/fi";
 import { Control, useController } from "react-hook-form";
-import { Dispatch, ReactElement, SetStateAction, useRef } from "react";
+import { Dispatch, SetStateAction, useRef } from "react";
 
 export type FormValue = {
   file_: FileList;

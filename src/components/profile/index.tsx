@@ -5,23 +5,11 @@ import {
   Flex,
   SimpleGrid,
   Stack,
-  StackDivider,
-  useColorModeValue,
-  Image,
   Button,
-  Spinner,
   Avatar,
   Center,
-  Wrap,
-  WrapItem,
 } from "@chakra-ui/react";
-import {
-  BsPerson,
-  BsMailbox,
-  BsJournalText,
-  BsPencil,
-  BsTrash,
-} from "react-icons/bs";
+import { BsPerson, BsMailbox } from "react-icons/bs";
 import ProfileInformation from "./Information";
 import { useQuery } from "@apollo/client";
 import query, { QueryResults } from "./query";

@@ -1,5 +1,4 @@
-import React, { ReactElement, useState, useEffect } from "react";
-import { useRouter } from "next/router";
+import React, { ReactElement, useState } from "react";
 import {
   Button,
   Modal,
@@ -15,9 +14,6 @@ import {
   VStack,
   chakra,
   HStack,
-  Spinner,
-  useToast,
-  Icon,
   FormErrorMessage,
 } from "@chakra-ui/react";
 import { useMutation } from "@apollo/client";
@@ -26,8 +22,6 @@ import mutation, { MutationResults, MutationVariables } from "./mutation";
 import useCustomToast from "src/components/_hooks/useCustomToast";
 import { useForm } from "react-hook-form";
 import FileUpload, { FormValue } from "src/components/_common/fileUpload";
-import validateFiles from "src/_utils/validateFiles";
-import { FiFile } from "react-icons/fi";
 import uploadImage from "src/_utils/uploadImage";
 
 interface UpdateTopicModalProps {

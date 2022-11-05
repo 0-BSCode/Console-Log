@@ -6,7 +6,6 @@ import {
   useState,
   useEffect,
 } from "react";
-import { useRouter } from "next/router";
 import { PartialUser } from "types/user";
 import useCurrentUser from "./hooks/useCurrentUser";
 import useSignUp, { SignUpHookResults } from "./hooks/useSignUp";
