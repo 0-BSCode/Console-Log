@@ -1,6 +1,6 @@
-import { flatten } from "@chakra-ui/react";
+import { Prisma } from "@prisma/client";
 import { Context } from "backend/context";
-import { extendType, list, stringArg } from "nexus";
+import { extendType, list, stringArg, intArg, nonNull, arg } from "nexus";
 import { PartialNote } from "types/note";
 import NoteObjectType from "../typeDefs";
 
@@ -12,8 +12,15 @@ export default extendType({
       args: {
         searchText: stringArg(),
         topicIds: list(stringArg()),
+        skip: nonNull(intArg()),
+        limit: nonNull(intArg()),
+        sortDirection: nonNull(stringArg()),
       },
-      async resolve(_parent, { searchText, topicIds }, ctx: Context) {
+      async resolve(
+        _parent,
+        { searchText, topicIds, skip, limit, sortDirection },
+        ctx: Context
+      ) {
         try {
           const user = await ctx.currentUser();
 
@@ -59,6 +66,13 @@ export default extendType({
                   in: finalTopics,
                 },
               },
+              orderBy: [
+                {
+                  updatedAt: Prisma.SortOrder[sortDirection],
+                },
+              ],
+              skip,
+              take: limit,
             });
           } else {
             notes = await ctx.prisma.note.findMany({
@@ -71,9 +85,11 @@ export default extendType({
               },
               orderBy: [
                 {
-                  updatedAt: "desc",
+                  updatedAt: Prisma.SortOrder[sortDirection],
                 },
               ],
+              skip,
+              take: limit,
             });
           }
 

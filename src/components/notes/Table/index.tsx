@@ -14,7 +14,7 @@ import {
   IconButton,
   InputLeftElement,
 } from "@chakra-ui/react";
-import { FiFilter, FiSearch } from "react-icons/fi";
+import { FiArrowLeft, FiArrowRight, FiFilter, FiSearch } from "react-icons/fi";
 import NotesCard from "../note/Card";
 import { useAuthContext } from "src/context/authContext";
 import query, { QueryResults, QueryVariables } from "./query";
@@ -29,16 +29,27 @@ const NotesTable = (): ReactElement => {
   const { currUser } = useAuthContext();
 
   const searchText: string = (router?.query?.searchText as string) || "";
+  const page = Number(router?.query?.page as string) || 0;
+  const limit = Number(router?.query?.limit as string) || 4;
+  const sortDirection: "asc" | "desc" =
+    (router?.query?.sortDirection as "asc" | "desc") || "desc";
+
   const selectedTopicIds: string =
     (router?.query?.selectedTopicIds as string) || "";
   const [isTopicsModalOpen, setIsTopicsModalOpen] = useState<boolean>(false);
   const [searchParams, setSearchParams] = useState({
     searchText,
+    page,
+    limit,
+    sortDirection,
     selectedTopicIds,
   });
 
   const variables: QueryVariables = {
     searchText: searchParams.searchText,
+    skip: Number(searchParams.page * searchParams.limit) || 0,
+    limit: Number(searchParams.limit) || 4,
+    sortDirection: searchParams.sortDirection || "desc",
     topicIds: searchParams.selectedTopicIds
       ? searchParams?.selectedTopicIds?.split(",")
       : [],
@@ -188,6 +199,28 @@ const NotesTable = (): ReactElement => {
               <NotesCard {...note} index={index} key={note.id} />
             ))}
         </SimpleGrid>
+        <HStack spacing={3} justifyContent={"center"} mt={10}>
+          <IconButton
+            aria-label={"Move back"}
+            icon={<FiArrowLeft />}
+            onClick={() => {
+              setSearchParams({
+                ...searchParams,
+                page: searchParams.page - 1,
+              });
+            }}
+          />
+          <IconButton
+            aria-label={"Move forward"}
+            icon={<FiArrowRight />}
+            onClick={() => {
+              setSearchParams({
+                ...searchParams,
+                page: searchParams.page + 1,
+              });
+            }}
+          />
+        </HStack>
         <Box>
           <Icon viewBox="0 0 40 35" mt={14} boxSize={10} color={"purple.400"}>
             <path
