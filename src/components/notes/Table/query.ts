@@ -11,6 +11,7 @@ export interface QueryVariables {
 
 export interface QueryResults {
   notes: PartialNote[];
+  notesCount: number;
 }
 
 export default gql`
@@ -37,5 +38,7 @@ export default gql`
         name
       }
     }
+
+    notesCount: note_count(searchText: $searchText, topicIds: $topicIds)
   }
 `;

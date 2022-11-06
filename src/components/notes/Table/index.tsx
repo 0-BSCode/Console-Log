@@ -84,6 +84,7 @@ const NotesTable = (): ReactElement => {
   }, [...Object.values(searchParams)]);
 
   const notes: PartialNote[] = data?.notes || [];
+  const notesCount = data?.notesCount;
 
   return (
     <>
@@ -233,6 +234,7 @@ const NotesTable = (): ReactElement => {
                 page: searchParams.page - 1,
               });
             }}
+            disabled={searchParams.page === 0}
           />
           <IconButton
             aria-label={"Move forward"}
@@ -243,6 +245,7 @@ const NotesTable = (): ReactElement => {
                 page: searchParams.page + 1,
               });
             }}
+            disabled={(searchParams.page + 1) * searchParams.limit > notesCount}
           />
         </HStack>
         <Box>
