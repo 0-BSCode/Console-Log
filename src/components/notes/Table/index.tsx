@@ -14,7 +14,13 @@ import {
   IconButton,
   InputLeftElement,
 } from "@chakra-ui/react";
-import { FiArrowLeft, FiArrowRight, FiFilter, FiSearch } from "react-icons/fi";
+import {
+  FiArrowLeft,
+  FiArrowRight,
+  FiFilter,
+  FiRefreshCw,
+  FiSearch,
+} from "react-icons/fi";
 import NotesCard from "../note/Card";
 import { useAuthContext } from "src/context/authContext";
 import query, { QueryResults, QueryVariables } from "./query";
@@ -155,6 +161,24 @@ const NotesTable = (): ReactElement => {
               />
             </InputGroup>
           </FormControl>
+
+          <IconButton
+            aria-label={"Reverse ordering"}
+            icon={<FiRefreshCw />}
+            onClick={() => {
+              if (searchParams.sortDirection === "asc") {
+                setSearchParams({
+                  ...searchParams,
+                  sortDirection: "desc",
+                });
+              } else {
+                setSearchParams({
+                  ...searchParams,
+                  sortDirection: "asc",
+                });
+              }
+            }}
+          />
           <IconButton
             aria-label={"Topics filter"}
             colorScheme={"purple"}
