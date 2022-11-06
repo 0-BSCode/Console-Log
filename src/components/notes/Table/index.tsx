@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement, useState, useEffect } from "react";
 import {
   Button,
   Box,
@@ -27,13 +27,21 @@ import TopicsFilterModal from "../TopicsFilterModal";
 const NotesTable = (): ReactElement => {
   const router = useRouter();
   const { currUser } = useAuthContext();
-  const [searchText, setSearchText] = useState<string>("");
+
+  const searchText: string = (router?.query?.searchText as string) || "";
+  const selectedTopicIds: string =
+    (router?.query?.selectedTopicIds as string) || "";
   const [isTopicsModalOpen, setIsTopicsModalOpen] = useState<boolean>(false);
-  const [selectedTopicIds, setSelectedTopicIds] = useState<string[]>([]);
+  const [searchParams, setSearchParams] = useState({
+    searchText,
+    selectedTopicIds,
+  });
 
   const variables: QueryVariables = {
-    searchText,
-    topicIds: selectedTopicIds,
+    searchText: searchParams.searchText,
+    topicIds: searchParams.selectedTopicIds
+      ? searchParams?.selectedTopicIds?.split(",")
+      : [],
   };
 
   const { data, loading, error, fetchMore } = useQuery<
@@ -47,24 +55,43 @@ const NotesTable = (): ReactElement => {
     },
   });
 
+  useEffect(() => {
+    const url = {
+      pathname: router.pathname,
+      query: {
+        ...searchParams,
+      },
+    };
+
+    router.push(url, undefined, { shallow: true });
+  }, [...Object.values(searchParams)]);
+
   const notes: PartialNote[] = data?.notes || [];
 
   return (
     <>
       <TopicsFilterModal
-        topicIds={selectedTopicIds}
+        topicIds={searchParams.selectedTopicIds}
         isOpen={isTopicsModalOpen}
         onClose={() => {
           setIsTopicsModalOpen(false);
         }}
         onChange={(topicId: string) => {
+          const selectedTopicsArr: string[] = searchParams.selectedTopicIds
+            .length
+            ? searchParams.selectedTopicIds.split(",")
+            : [];
+          let newTopicIds = [];
           if (selectedTopicIds.includes(topicId)) {
-            setSelectedTopicIds(
-              selectedTopicIds.filter((id) => id !== topicId)
-            );
+            newTopicIds = selectedTopicsArr.filter((id) => id !== topicId);
           } else {
-            setSelectedTopicIds([...selectedTopicIds, topicId]);
+            newTopicIds = [...selectedTopicsArr, topicId];
           }
+
+          setSearchParams({
+            ...searchParams,
+            selectedTopicIds: newTopicIds.join(","),
+          });
         }}
       />
       <Flex
@@ -106,9 +133,12 @@ const NotesTable = (): ReactElement => {
               <Input
                 type={"text"}
                 placeholder={"Search for note title"}
-                value={searchText}
+                value={searchParams.searchText}
                 onChange={(e) => {
-                  setSearchText(e.target.value);
+                  setSearchParams({
+                    ...searchParams,
+                    searchText: e.target.value,
+                  });
                   fetchMore({ variables });
                 }}
               />

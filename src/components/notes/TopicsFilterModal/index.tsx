@@ -19,7 +19,7 @@ export interface Props {
   isOpen: boolean;
   onClose: () => void;
   onChange: (topicId: string) => void;
-  topicIds: string[];
+  topicIds: string;
 }
 
 const TopicsFilterModal = ({
@@ -34,9 +34,10 @@ const TopicsFilterModal = ({
     fetchPolicy: "network-only",
   });
 
+  const selectedTopicIds = topicIds ? topicIds.split(",") : [];
   const topics = data?.topics || [];
   const selectedTopics =
-    topics.filter((topic) => topicIds.includes(topic.id)) || [];
+    topics.filter((topic) => selectedTopicIds.includes(topic.id)) || [];
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -78,7 +79,7 @@ const TopicsFilterModal = ({
                       key={topic.id}
                       onClick={() => onChange(topic.id)}
                       colorScheme={
-                        topicIds.includes(topic.id) ? "purple" : "gray"
+                        selectedTopicIds.includes(topic.id) ? "purple" : "gray"
                       }
                     >
                       {topic.name}
