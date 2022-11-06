@@ -1,31 +1,20 @@
-import { Prisma } from "@prisma/client";
+import { extendType, list, stringArg } from "nexus";
 import { Context } from "backend/context";
 import parseNoteTopics from "backend/utils/parseNoteTopics";
-import { extendType, list, stringArg, intArg, nonNull } from "nexus";
-import { PartialNote } from "types/note";
-import NoteObjectType from "../typeDefs";
 
 export default extendType({
   type: "Query",
   definition(t) {
-    t.nonNull.list.field("notes", {
-      type: NoteObjectType,
+    t.nonNull.int("note_count", {
       args: {
         searchText: stringArg(),
         topicIds: list(stringArg()),
-        skip: nonNull(intArg()),
-        limit: nonNull(intArg()),
-        sortDirection: nonNull(stringArg()),
       },
-      async resolve(
-        _parent,
-        { searchText, topicIds, skip, limit, sortDirection },
-        ctx: Context
-      ) {
+      resolve: async (_parent, { searchText, topicIds }, ctx: Context) => {
         try {
           const user = await ctx.currentUser();
 
-          let notes: PartialNote[];
+          let noteCount;
 
           if (topicIds?.length) {
             const noteTopics = await ctx.prisma.noteTopics.findMany({
@@ -46,22 +35,18 @@ export default extendType({
 
             const finalTopics = parseNoteTopics({ noteTopics, topicIds });
 
-            notes = await ctx.prisma.note.findMany({
+            noteCount = await ctx.prisma.note.aggregate({
               where: {
                 id: {
                   in: finalTopics,
                 },
               },
-              orderBy: [
-                {
-                  updatedAt: Prisma.SortOrder[sortDirection],
-                },
-              ],
-              skip,
-              take: limit,
+              _count: {
+                id: true,
+              },
             });
           } else {
-            notes = await ctx.prisma.note.findMany({
+            noteCount = await ctx.prisma.note.aggregate({
               where: {
                 userId: user.id,
                 title: {
@@ -69,19 +54,16 @@ export default extendType({
                   mode: "insensitive",
                 },
               },
-              orderBy: [
-                {
-                  updatedAt: Prisma.SortOrder[sortDirection],
-                },
-              ],
-              skip,
-              take: limit,
+              _count: {
+                id: true,
+              },
             });
           }
 
-          return notes;
+          return noteCount._count.id;
         } catch (e) {
-          throw new Error(`ERROR ON NOTE RETRIEVAL: ${e}`);
+          console.error(e.message);
+          throw new Error(`ERROR RETRIEVING NOTE COUNT: ${e.message}`);
         }
       },
     });
