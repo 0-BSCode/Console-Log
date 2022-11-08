@@ -36,7 +36,7 @@ const NotesTable = (): ReactElement => {
 
   const searchText: string = (router?.query?.searchText as string) || "";
   const page = Number(router?.query?.page as string) || 0;
-  const limit = Number(router?.query?.limit as string) || 4;
+  const limit = Number(router?.query?.limit as string) || 5;
   const sortDirection: "asc" | "desc" =
     (router?.query?.sortDirection as "asc" | "desc") || "desc";
 
@@ -54,7 +54,7 @@ const NotesTable = (): ReactElement => {
   const variables: QueryVariables = {
     searchText: searchParams.searchText,
     skip: Number(searchParams.page * searchParams.limit) || 0,
-    limit: Number(searchParams.limit) || 4,
+    limit: Number(searchParams.limit) || 5,
     sortDirection: searchParams.sortDirection || "desc",
     topicIds: searchParams.selectedTopicIds
       ? searchParams?.selectedTopicIds?.split(",")
@@ -245,7 +245,9 @@ const NotesTable = (): ReactElement => {
                 page: searchParams.page + 1,
               });
             }}
-            disabled={(searchParams.page + 1) * searchParams.limit > notesCount}
+            disabled={
+              (searchParams.page + 1) * searchParams.limit >= notesCount
+            }
           />
         </HStack>
         <Box>
