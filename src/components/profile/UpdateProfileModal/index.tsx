@@ -73,6 +73,7 @@ const UpdateProfileModal = ({
         description: "Updated profile",
         status: "success",
       });
+      hidePasswords();
       onClose();
     },
     onError: (e) => {
@@ -88,11 +89,16 @@ const UpdateProfileModal = ({
       id: user?.id || "",
       username: user?.username || "",
       email: user?.email || "",
+    });
+  };
+
+  const hidePasswords = () => {
+    setEditProfileParams({
+      ...editProfileParams,
       password: "",
       newPassword: "",
       confirmNewPassword: "",
     });
-
     setShowPasswordFields(false);
   };
 
@@ -191,11 +197,7 @@ const UpdateProfileModal = ({
                   isInvalid={!passwordsMatch}
                 />
 
-                <Button
-                  variant={"ghost"}
-                  onClick={() => setShowPasswordFields(false)}
-                  w={"full"}
-                >
+                <Button variant={"ghost"} onClick={hidePasswords} w={"full"}>
                   Close
                 </Button>
               </>
@@ -218,6 +220,7 @@ const UpdateProfileModal = ({
               colorScheme="gray"
               disabled={loading}
               onClick={() => {
+                hidePasswords();
                 resetInformation();
                 onClose();
               }}
