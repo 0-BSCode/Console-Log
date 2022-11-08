@@ -1,6 +1,8 @@
 import { User } from "@prisma/client";
+import hashPassword from "backend/utils/hashPassword";
 import { extendType, stringArg, nonNull } from "nexus";
 import UserObjectType from "../typeDefs";
+import bcrypt from "bcrypt";
 
 export default extendType({
   type: "Mutation",
@@ -11,8 +13,14 @@ export default extendType({
         username: nonNull(stringArg()),
         email: nonNull(stringArg()),
         image: stringArg(),
+        password: stringArg(),
+        newPassword: stringArg(),
       },
-      async resolve(_parents, { username, email, image }, ctx) {
+      async resolve(
+        _parents,
+        { username, email, image, password, newPassword },
+        ctx
+      ) {
         try {
           const user = await ctx.currentUser();
 
@@ -42,6 +50,31 @@ export default extendType({
 
           if (image.length) {
             updateObject.image = image;
+          }
+
+          if (password && hashPassword) {
+            const currUser = await ctx.prisma.user.findFirst({
+              where: {
+                id: user.id,
+              },
+            });
+
+            const passwordsMatch = await bcrypt.compare(
+              password,
+              currUser.password
+            );
+
+            if (!passwordsMatch) {
+              throw new Error("Incorrect original password");
+            } else {
+              // TODO: Password validation
+              if (newPassword.length < 12) {
+                throw new Error("Please enter a more secure password");
+              } else {
+                const newHashedPass = await hashPassword(newPassword);
+                updateObject.password = newHashedPass;
+              }
+            }
           }
 
           const updatedUser = await ctx.prisma.user.update({

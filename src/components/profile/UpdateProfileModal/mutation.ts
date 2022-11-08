@@ -5,6 +5,8 @@ export interface MutationVariables {
   username: string;
   email: string;
   image?: string;
+  password?: string;
+  newPassword?: string;
 }
 
 export interface MutationResults {
@@ -16,8 +18,16 @@ export default gql`
     $username: String!
     $email: String!
     $image: String
+    $password: String
+    $newPassword: String
   ) {
-    updatedUser: updateUser(username: $username, email: $email, image: $image) {
+    updatedUser: updateUser(
+      username: $username
+      email: $email
+      image: $image
+      password: $password
+      newPassword: $newPassword
+    ) {
       id
     }
   }

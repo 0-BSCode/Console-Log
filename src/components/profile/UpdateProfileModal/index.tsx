@@ -15,6 +15,7 @@ import {
   chakra,
   HStack,
   FormErrorMessage,
+  InputRightElement,
 } from "@chakra-ui/react";
 import { useMutation } from "@apollo/client";
 import { PartialUser } from "types/user";
@@ -23,11 +24,18 @@ import useCustomToast from "src/components/_hooks/useCustomToast";
 import { useForm } from "react-hook-form";
 import FileUpload, { FormValue } from "src/components/_common/fileUpload";
 import uploadImage from "src/_utils/uploadImage";
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import PasswordTextField from "src/components/_common/passwordTextField";
 
 interface UpdateTopicModalProps {
   isOpen: boolean;
   onClose: () => void;
   user: PartialUser;
+}
+
+interface ProfileInformation extends PartialUser {
+  newPassword?: string;
+  confirmNewPassword?: string;
 }
 
 const UpdateProfileModal = ({
@@ -44,12 +52,17 @@ const UpdateProfileModal = ({
   const toast = useCustomToast();
   const [imgUploading, setImgUploading] = useState<boolean>(false);
   const [imgUpload, setImgUpload] = useState<File>(null);
+  const [showPasswordFields, setShowPasswordFields] = useState<boolean>(false);
 
-  const [editProfileParams, setEditProfileParams] = useState<PartialUser>({
-    id: user?.id || "",
-    username: user?.username || "",
-    email: user?.email || "",
-  });
+  const [editProfileParams, setEditProfileParams] =
+    useState<ProfileInformation>({
+      id: user?.id || "",
+      username: user?.username || "",
+      email: user?.email || "",
+      password: "",
+      newPassword: "",
+      confirmNewPassword: "",
+    });
 
   const [updateProfileMutation, updateProfileMutationState] = useMutation<
     MutationResults,
@@ -62,9 +75,30 @@ const UpdateProfileModal = ({
       });
       onClose();
     },
+    onError: (e) => {
+      toast.addToast({
+        description: e.message.split(":").pop(),
+        status: "error",
+      });
+    },
   });
 
+  const resetInformation = () => {
+    setEditProfileParams({
+      id: user?.id || "",
+      username: user?.username || "",
+      email: user?.email || "",
+      password: "",
+      newPassword: "",
+      confirmNewPassword: "",
+    });
+
+    setShowPasswordFields(false);
+  };
+
   const loading = updateProfileMutationState.loading || imgUploading;
+  const passwordsMatch =
+    editProfileParams.newPassword === editProfileParams.confirmNewPassword;
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -123,17 +157,76 @@ const UpdateProfileModal = ({
                 {errors.file_ && errors?.file_.message}
               </FormErrorMessage>
             </FormControl>
+
+            {showPasswordFields ? (
+              <>
+                <PasswordTextField
+                  label={"Current password"}
+                  value={editProfileParams.password}
+                  onChange={(password: string) => {
+                    setEditProfileParams({ ...editProfileParams, password });
+                  }}
+                />
+
+                <PasswordTextField
+                  label={"New password"}
+                  value={editProfileParams.newPassword}
+                  onChange={(newPassword: string) => {
+                    setEditProfileParams({
+                      ...editProfileParams,
+                      newPassword,
+                    });
+                  }}
+                />
+
+                <PasswordTextField
+                  label={"Confirm new password"}
+                  value={editProfileParams.confirmNewPassword}
+                  onChange={(confirmNewPassword: string) => {
+                    setEditProfileParams({
+                      ...editProfileParams,
+                      confirmNewPassword,
+                    });
+                  }}
+                  isInvalid={!passwordsMatch}
+                />
+
+                <Button
+                  variant={"ghost"}
+                  onClick={() => setShowPasswordFields(false)}
+                  w={"full"}
+                >
+                  Close
+                </Button>
+              </>
+            ) : (
+              <Button
+                variant={"ghost"}
+                onClick={() => setShowPasswordFields(true)}
+                colorScheme={"purple"}
+                w={"full"}
+              >
+                Edit Password
+              </Button>
+            )}
           </VStack>
         </ModalBody>
 
         <ModalFooter justifyContent={"space-between"}>
           <HStack spacing={3}>
-            <Button colorScheme="gray" disabled={loading} onClick={onClose}>
+            <Button
+              colorScheme="gray"
+              disabled={loading}
+              onClick={() => {
+                resetInformation();
+                onClose();
+              }}
+            >
               Close
             </Button>
             <Button
               colorScheme="blue"
-              disabled={loading}
+              disabled={loading || !passwordsMatch}
               onClick={async () => {
                 setImgUploading(true);
                 const imgUrl = await uploadImage(imgUpload);
@@ -144,6 +237,8 @@ const UpdateProfileModal = ({
                     username: editProfileParams.username || "",
                     email: editProfileParams.email || "",
                     image: imgUrl || "",
+                    password: editProfileParams.password,
+                    newPassword: editProfileParams.newPassword,
                   },
                 });
               }}
