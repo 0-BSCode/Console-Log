@@ -6,4 +6,3 @@ A simple web app for journaling.
 
 1. Error handling refactor on backend (global error handler)
 2. Implement password changing
-3. Error notifications (esp. for sign up/sign in)
