@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import { gql, useMutation, MutationResult } from "@apollo/client";
 import { PartialUser } from "types/user";
 import { CurrentUserHookResult } from "./useCurrentUser";
+import useCustomToast from "src/components/_hooks/useCustomToast";
 
 interface MutationVariables {
   username?: string;
@@ -37,6 +38,7 @@ export interface SignUpHookResults {
 }
 
 const useSignUp = ({ currentUser }: SignUpHookProps): SignUpHookResults => {
+  const toast = useCustomToast();
   const router = useRouter();
   const [signUpMutation, signUpMutationState] = useMutation<
     MutationResults,
@@ -48,7 +50,10 @@ const useSignUp = ({ currentUser }: SignUpHookProps): SignUpHookResults => {
       router.push("/notes");
     },
     onError: (e) => {
-      console.error(e.message);
+      toast.addToast({
+        description: e.message.split(":").pop(),
+        status: "error",
+      });
     },
   });
 

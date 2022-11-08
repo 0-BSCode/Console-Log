@@ -29,8 +29,10 @@ import { PartialNote } from "types/note";
 import { AddIcon } from "@chakra-ui/icons";
 import { useRouter } from "next/router";
 import TopicsFilterModal from "../TopicsFilterModal";
+import useCustomToast from "src/components/_hooks/useCustomToast";
 
 const NotesTable = (): ReactElement => {
+  const toast = useCustomToast();
   const router = useRouter();
   const { currUser } = useAuthContext();
 
@@ -68,7 +70,10 @@ const NotesTable = (): ReactElement => {
     variables,
     fetchPolicy: "network-only",
     onError: (e) => {
-      console.error(e.message);
+      toast.addToast({
+        description: e.message.split(":").pop(),
+        status: "error",
+      });
     },
   });
 

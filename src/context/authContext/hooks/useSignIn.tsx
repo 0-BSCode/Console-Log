@@ -2,6 +2,7 @@ import { gql, QueryResult, useLazyQuery } from "@apollo/client";
 import { PartialUser } from "types/user";
 import { CurrentUserHookResult } from "./useCurrentUser";
 import { useRouter } from "next/router";
+import useCustomToast from "src/components/_hooks/useCustomToast";
 
 interface QueryVariables {
   email?: string;
@@ -32,6 +33,7 @@ export interface SignInHookResults {
 }
 
 const useSignIn = ({ currentUser }: SignInHookProps): SignInHookResults => {
+  const toast = useCustomToast();
   const router = useRouter();
   const [logInQuery, logInQueryState] = useLazyQuery(query, {
     fetchPolicy: "network-only",
@@ -40,7 +42,10 @@ const useSignIn = ({ currentUser }: SignInHookProps): SignInHookResults => {
       router.push("/notes");
     },
     onError: (e) => {
-      console.error(e.message);
+      toast.addToast({
+        description: e.message.split(":").pop(),
+        status: "error",
+      });
     },
   });
 

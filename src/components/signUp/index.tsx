@@ -49,8 +49,7 @@ const SignUp = ({
           <Stack align={"center"}>
             <Heading fontSize={"4xl"}> Sign up </Heading>
             <Text fontSize={"lg"} color={"gray.600"}>
-              to enjoy all of our cool <Link color={"blue.400"}>features</Link>{" "}
-              ✌️
+              to get started!
             </Text>
           </Stack>
           <Box

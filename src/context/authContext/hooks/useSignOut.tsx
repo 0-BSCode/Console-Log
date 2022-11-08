@@ -1,4 +1,5 @@
 import { gql, QueryResult, useLazyQuery } from "@apollo/client";
+import useCustomToast from "src/components/_hooks/useCustomToast";
 import { PartialUser } from "types/user";
 import { CurrentUserHookResult } from "./useCurrentUser";
 
@@ -24,13 +25,17 @@ export interface SignOutHookResults {
 }
 
 const useSignOut = ({ currentUser }: SignOutHookProps) => {
+  const toast = useCustomToast();
   const [logOutQuery, logOutQueryState] = useLazyQuery<QueryResults>(query, {
     fetchPolicy: "network-only",
     onCompleted: () => {
       currentUser.set();
     },
     onError: (e) => {
-      console.error(e.message);
+      toast.addToast({
+        description: e.message.split(":").pop(),
+        status: "error",
+      });
     },
   });
 
